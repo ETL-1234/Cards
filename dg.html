@@ -36,10 +36,9 @@ html,body{
   position:relative;
   display:flex;
   justify-content:center;
-  align-items:flex-end;     /* KEY */
+  align-items:flex-end;   
   height:auto;           
-  min-height:0;
-  padding-top:10px;
+  min-height: calc(var(--card-w) * 1.45); /* full card height */
   padding-bottom:60px;           
   overflow:visible;
   }
@@ -70,7 +69,6 @@ html,body{
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
-  margin-top:40px;   /* creates real lift space */
   transform-origin:center;
   transition:transform 300ms ease;
   cursor:pointer;
