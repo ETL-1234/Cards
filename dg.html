@@ -38,7 +38,8 @@ html,body{
   justify-content:center;
   align-items:flex-end;   
   height:auto;           
-  min-height: calc(var(--card-w) * 1.45); /* full card height */
+  min-height:0;
+  padding-top:10px;
   padding-bottom:60px;           
   overflow:visible;
   }
@@ -69,6 +70,7 @@ html,body{
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
+  margin-top:40px; 
   transform-origin:center;
   transition:transform 300ms ease;
   cursor:pointer;
