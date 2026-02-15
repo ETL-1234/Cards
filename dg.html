@@ -35,10 +35,12 @@ html,body{
   position:relative;
   display:flex;
   justify-content:center;
-  padding-top:120px;   /* increased */
-  padding-bottom:20px; /* increased */
-  min-height:600px;     /* ensures enough height */
-  overflow:visible;     /* IMPORTANT */
+  align-items:flex-end;     /* KEY */
+  padding-top:60px;         /* reduce top padding */
+  padding-bottom:0;
+  height:75vh;              /* better than fixed 600px */
+  min-height:520px;
+  overflow:visible;
   }
 
 .scroller{
@@ -53,10 +55,10 @@ html,body{
 
 .track{
   display:flex;
-  align-items:center;
-  padding-top:40px;
-  padding-bottom:20px;
-  overflow:visible;   /* important */
+  align-items:flex-end;  /* KEY CHANGE */
+  padding-top:0;
+  padding-bottom:0;
+  overflow:visible;
 }
 
 .card{
@@ -117,7 +119,7 @@ html,body{
 }
 
 .revealPanel{
-  margin-top:12px;
+  margin-top:-40px;
   display:none;
   flex-direction:column;
   align-items:center;
@@ -242,7 +244,11 @@ scroller.addEventListener('click', ()=>{
 /* ---------- EXTRACT WORD ---------- */
 function extractKeyword(url){
   const file = url.split('/').pop().replace('.png','');
-  return file.split('_')[1].replace(/_/g,' ');
+  
+  // Remove "CARD-XX_" prefix safely
+  const namePart = file.replace(/^CARD-\d+_/, '');
+  
+  return namePart.replace(/_/g,' ');
 }
 
 /* ---------- INITIAL ---------- */
