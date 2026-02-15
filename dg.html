@@ -1,0 +1,433 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Daily Guidance — Pick a Card</title>
+  <style>
+    :root{
+      --bg: #f5eee8;
+      --headline-color: #000;
+      --close-bg: #1C1E2B;
+      --card-w: clamp(140px, 28vw, 300px); /* responsive width */
+      --card-ratio: calc(750/1050); /* width/height ratio (kept for reference) */
+      --overlap-factor: 0.50; /* overlap fraction */
+    }
+    html,body{height:100%;margin:0;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:var(--bg);color:#111}
+
+.app {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--headline-color);
+  margin: 8px 0 16px;  /* slightly smaller bottom margin for spacing */
+  text-transform: uppercase;
+  font-size: 20px;
+}
+
+.viewport {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: flex-start;      /* align cards to the top */
+  justify-content: center;
+  padding-top: 40px;            /* space above tall cards */
+  padding-bottom: 20px;         /* space for reveal panel & button */
+  box-sizing: border-box;
+  min-height: 0;                 /* prevents flex item from overflowing */
+}
+
+.scroller {
+  display: flex;
+  align-items: flex-start;       /* keep cards aligned to top */
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.track {
+  display: flex;            /* keep cards in a horizontal row */
+  align-items: center;      /* vertically center the cards in viewport */
+  gap: 0;                   /* you already overlap with margin-right */
+padding-top: 25px;
+  padding-bottom: 0px;
+justify-content: center; 
+}
+
+
+    .card{
+flex:0 0 auto; 
+width:var(--card-w); 
+aspect-ratio:750/1050; 
+position:relative; 
+scroll-snap-align:center; 
+margin-right:calc(var(--card-w) * -1 * var(--overlap-factor)); 
+transform-origin:center center;
+transition:transform 300ms cubic-bezier(.2,.9,.25,1),opacity 250ms ease,filter 250ms ease; cursor:pointer}
+
+    /* card inner flip */
+    .card__inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform 700ms cubic-bezier(.2,.9,.25,1)}
+    .card.flipped .card__inner{transform:rotateY(180deg)}
+
+    .face{position:absolute;inset:0;border-radius:16px;overflow:hidden;backface-visibility:hidden;display:block;box-shadow:0 6px 18px rgba(20,20,25,0.06);}
+    .face img{width:100%;height:100%;object-fit:cover;display:block}
+    .face.front{transform:rotateY(180deg)}
+
+.face {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden; /* Safari fix */
+  display: block;
+  box-shadow: 0 6px 18px rgba(20,20,25,0.06);
+}
+
+.card {
+  perspective: 1200px;
+  -webkit-perspective: 1200px; /* iOS Safari critical */
+}
+
+.card__inner {
+  transform: translateZ(1px) rotateY(0); /* prevents Safari face-bleed */
+}
+
+    /* subtle default look */
+    .card.center{
+  transform: translateY(-25px);
+  filter: brightness(1.04);
+  transition: transform 400ms ease-in-out;
+}
+    .card:not(.center){
+   filter:brightness(0.98);
+   z-index:1;
+}
+
+.card.center,
+.card.flipped {
+  filter: brightness(1.04) !important;
+  opacity: 1 !important;
+}
+
+  opacity: 1 !important;
+  z-index: 10; /* keep it above the others when flipped */
+}
+
+    /* when selected */
+   .card.selected{
+    transform:translateY(-18px) scale(1.12)!important;
+}
+    .card.selected .card__inner{
+    transition:transform 600ms cubic-bezier(.2,.9,.25,1);
+}
+
+.card.blur:not(.flipped) {
+  opacity: 0.00;
+  filter: blur(0.6px);
+}
+
+.card.flipped {
+  opacity: 1 !important;
+  filter: none !important;
+z-index: 9999 !important; /* does NOT change size or card width */
+}
+
+    /* Today word panel */
+.revealPanel {
+  position: static;            /* remove absolute positioning */
+  margin-top: 8px;            /* spacing from cards */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.revealPanel .label {
+  font-size: 20px;
+  color: #333;
+  font-weight: 600;
+}
+
+.revealPanel .word {
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  font-weight: 800;
+  color: #111;
+  text-transform: uppercase;
+}
+
+    /* Close button */
+
+.closeWrap {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 18px;
+}
+
+.Closewrap .closeBtn {
+  background: var(--close-bg);
+  color: #fff;                /* white text */
+  border: 0;
+  padding: 16px 32px;         /* bigger button */
+  border-radius: 12px;        /* slightly rounder */
+  font-size: 16px;            /* larger font */
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;          /* ensure centered text */
+}
+
+
+    /* small instructions */
+    .instructions{position:absolute;left:12px;bottom:18px;font-size:12px;color:#666}
+
+    /* responsive tweaks */
+    @media (max-width:420px){ h1{font-size:18px} :root{--card-w:calc(40vw);} .revealPanel .word{font-size:18px} }
+  </style>
+</head>
+<body>
+  <div class="app" id="appRoot">
+    <h1>DAILY GUIDANCE</h1>
+
+    <div class="viewport">
+      <div class="scroller" id="scroller" tabindex="0">
+        <div class="track" id="track"></div>
+      </div>
+    </div>
+
+      <div class="revealPanel" id="revealPanel" style="display:none;">
+        <div class="label">Today’s Word</div>
+        <div class="word" id="revealWord">PATIENCE</div>
+      </div>
+
+      <div class="closeWrap" id="closeWrap" style="display:none;">
+        <a class="closeBtn" id="closeBtn" href="#home">CLOSE</a>
+      </div>
+  </div>
+
+  <script>
+    /* ---------- Image URLs (44 cards + backside) ---------- */
+    const IMAGES = [
+      'https://dl.dropboxusercontent.com/scl/fi/7fzx4ojehvayn9yedblfy/CARD-01_PATIENCE.png?rlkey=t4b02dh0nj5rw0plh8v9fklxd&st=6k65ek3k',
+      'https://dl.dropboxusercontent.com/scl/fi/h4cv8iepmyub8sm5kbx9o/CARD-02_JOURNEY.png?rlkey=1jt6lptrngr5yvq4ll0hrpg07&st=5p3yi56j',
+      'https://dl.dropboxusercontent.com/scl/fi/uw4czvl9wyi8tnqevb0ad/CARD-03_PRESENT.png?rlkey=ofwvcqc3ohv0wc5q54zzlufsj&st=vvi4xc5z',
+      'https://dl.dropboxusercontent.com/scl/fi/c25qu2ifrqx3mmq7be9s2/CARD-04_EXTRAORDINARY.png?rlkey=t9vfbjki7g6r4uj6jq3q40axv&st=y9vnm3n3',
+      'https://dl.dropboxusercontent.com/scl/fi/xslr0tolnyukd7uu3h58l/CARD-05_BEGINNING.png?rlkey=lb8mtaxnq9aq322gxv00nkxo8&st=5nztcz7q',
+      'https://dl.dropboxusercontent.com/scl/fi/oykbul5h4b0ugkr3mr0o8/CARD-06_NATURE.png?rlkey=zwb00sibn40y4w0xz6ifc896z&st=fooyo53z',
+      'https://dl.dropboxusercontent.com/scl/fi/zncyooczyzczm3hy175i3/CARD-07_CONNECTION.png?rlkey=416p468atbx2xrprusa3tio1c&st=hm4h9uyn',
+      'https://dl.dropboxusercontent.com/scl/fi/4sg1gsvyzco7mf1hniy97/CARD-08_INTUITION.png?rlkey=sgebx73wknjt92i60gqgy5i1k&st=pajcl19c',
+      'https://dl.dropboxusercontent.com/scl/fi/f7cmaavrp1f7md2hb8v5i/CARD-09_COMPASSION.png?rlkey=e58568jdpideykpz43d302d0a&st=ux7h9ejm',
+      'https://dl.dropboxusercontent.com/scl/fi/he6p44iv9acy4030oclrr/CARD-10_ENERGY.png?rlkey=rl3l3v6lposkcab8lwftxyohx&st=e6ao2u0v',
+      'https://dl.dropboxusercontent.com/scl/fi/jot4njaw7acrzryfj8d2k/CARD-11_RESILIENCE.png?rlkey=qgx37a65aeq3qnikzovpl93oj&st=jhtt2e4r',
+      'https://dl.dropboxusercontent.com/scl/fi/zgpf760421nov6b656vmu/CARD-12_PERSONAL_POWER.png?rlkey=hjbdenab5r5xj6802hewlckit&st=y0kd6tmr',
+      'https://dl.dropboxusercontent.com/scl/fi/g6id3bicy0gx5iv3urejy/CARD-13_IMAGINATION.png?rlkey=oxoszvk7q6p65mx1sz2kd15vh&st=ciaj3vfl',
+      'https://dl.dropboxusercontent.com/scl/fi/eru1zx7rfxdwgy9xfyelu/CARD-14_STABILITY.png?rlkey=7dkik38hleh9nrka2nbazc05l&st=czl9zu0n',
+      'https://dl.dropboxusercontent.com/scl/fi/qntnont11mmqf00jgfmfe/CARD-15_REST.png?rlkey=vz2kizhgw8q3zx73ir3ga2wlw&st=8xmrz75j',
+      'https://dl.dropboxusercontent.com/scl/fi/c6xwfo39hwhxlxppvi1py/CARD-16_COMMUNITY.png?rlkey=2n5mawa0q41w0uspe6f33z0v7&st=8c2v1mcs',
+      'https://dl.dropboxusercontent.com/scl/fi/q07atx37f1vxn5bz7i2m3/CARD-17_CELEBRATION.png?rlkey=5r8mybgvx3o470kfaijxb5lrc&st=5yhmodg2',
+      'https://dl.dropboxusercontent.com/scl/fi/ouq1tocyl2ual0swz1tga/CARD-18_LUCK.png?rlkey=jvosxih1f2lqnw1qw8y2jtaqx&st=5457km2d',
+      'https://dl.dropboxusercontent.com/scl/fi/emdzhtbeysnaa0w5nk35l/CARD-19_RECIPROCITY.png?rlkey=3gpsudjtt3wt42sypotimo7yb&st=df06g4o6',
+      'https://dl.dropboxusercontent.com/scl/fi/lnykkcdgavvblkxz0sc5v/CARD-20_RECEIVING.png?rlkey=kuujcw5eakbjpf9p6jwi41764&st=if0djomt',
+      'https://dl.dropboxusercontent.com/scl/fi/5sm4petiq0vxzmpdd8abf/CARD-21_COMMUNICATION.png?rlkey=g8i7wsfg19uw831xyypdqzutr&st=pvmcdlba',
+      'https://dl.dropboxusercontent.com/scl/fi/v6o6jjd3s21pghvsbpd4y/CARD-22_REFRAME.png?rlkey=2k4wqo07e8firnxjfst3wd9ob&st=u192m1ve',
+      'https://dl.dropboxusercontent.com/scl/fi/aryc0781h0k082g9px4gs/CARD-23_SOFTEN.png?rlkey=p3lwqo7cf1zcux6h6dx9094qz&st=knmvs37r',
+      'https://dl.dropboxusercontent.com/scl/fi/w0hpy1u29i0tu7p2ogvlc/CARD-24_SELF-WORTH.png?rlkey=ewrk5s7vdhiuuquj2mc6q9p9l&st=uacitrzd',
+      'https://dl.dropboxusercontent.com/scl/fi/khhy9htk5jmnxiq5m7ups/CARD-25_ABUNDANCE.png?rlkey=bctg98zmk7641fe0yi081nsbq&st=zh8lvigk',
+      'https://dl.dropboxusercontent.com/scl/fi/04je0ropppfgaqwpian6f/CARD-26_BALANCE.png?rlkey=9780modn60ep2pr41n1sy6yuy&st=iwhsnur1',
+      'https://dl.dropboxusercontent.com/scl/fi/9nw6s8n82fhrevn5en53r/CARD-27_FREEDOM.png?rlkey=x59sa0hul5g3pts604186e62y&st=5amultp1',
+      'https://dl.dropboxusercontent.com/scl/fi/v30a3nexhiw7qmxfcccw1/CARD-28_EASE.png?rlkey=gkipn1hyo9m1u1cadlsv54bbp&st=ifrf0uqq',
+      'https://dl.dropboxusercontent.com/scl/fi/43wy5r4gnwc479dzipv28/CARD-29_AUTHENTICITY.png?rlkey=nokaylncct4zhnnd4azykzzy1&st=xfe6cy78',
+      'https://dl.dropboxusercontent.com/scl/fi/gqqz6ys60uzmftmtk1kl7/CARD-30_FLOW.png?rlkey=f8ls5jmfbiab8qn20ktgr4nat&st=5cdc769p',
+      'https://dl.dropboxusercontent.com/scl/fi/122j1zpiz4w6z7cn9lslo/CARD-31_ACCEPTANCE.png?rlkey=qyf7j6326f15rlpytppfr4d09&st=c4e2xplr',
+      'https://dl.dropboxusercontent.com/scl/fi/phv0l9fte1qibop2d5rdh/CARD-32_NOTICE.png?rlkey=o6xwnv8cy3ziafvn5cz8peuhw&st=lk3qgjfe',
+      'https://dl.dropboxusercontent.com/scl/fi/p828rtebnk39aq2zhivev/CARD-33_BOUNDARIES.png?rlkey=cqoq3kynadygw4n8tc6hn954r&st=xbgg5pk4',
+      'https://dl.dropboxusercontent.com/scl/fi/00qymw6zhbql4mywjxsle/CARD-34_DETACHMENT.png?rlkey=dxnjkfembwvvmtty637im6amn&st=mlwdyd6s',
+      'https://dl.dropboxusercontent.com/scl/fi/w8h3scfyvrh9eitkfnduq/CARD-35_RENEWAL.png?rlkey=6ilylwhlac5zbnxwibhdgzd18&st=ipau9xpa',
+      'https://dl.dropboxusercontent.com/scl/fi/1zy046ncad8vvts1fvysh/CARD-36_GRATITUDE.png?rlkey=g28k925k7izqb4ppink91gxdx&st=1637qfbf',
+      'https://dl.dropboxusercontent.com/scl/fi/r7fc7m6usp34el6om6tmt/CARD-37_LIMITLESS.png?rlkey=peg2oon28x175h2t2n8swrykl&st=k7whzwxt',
+      'https://dl.dropboxusercontent.com/scl/fi/wuygjjlm1uc7uy05vm2ws/CARD-38_COURAGE.png?rlkey=ebv7hhnfnpayq607794q0x54h&st=916sskya',
+      'https://dl.dropboxusercontent.com/scl/fi/8ybxoe4mzrrh74pxd19xq/CARD-39_JOY.png?rlkey=3uedguabdddisslpld1i32ara&st=e4mzhc5q',
+      'https://dl.dropboxusercontent.com/scl/fi/xu2bvc7q2528rlqn7ke3o/CARD-40_INNER_GUIDANCE.png?rlkey=igkwm5q50lrfdrzfhqhtiivqj&st=ck4x356d',
+      'https://dl.dropboxusercontent.com/scl/fi/iugornv87vn34u4q0ecmn/CARD-41_CREATIVITY.png?rlkey=s73o410obqsu8k25b7lv6lnob&st=v10wmpu3',
+      'https://dl.dropboxusercontent.com/scl/fi/0vg9xvmxo6bv4vf3dxbxr/CARD-42_SURRENDER.png?rlkey=pzfah0nh1u6scdyogc369l209&st=ftmlcu6b',
+      'https://dl.dropboxusercontent.com/scl/fi/uqkzm0rm66c4gyiyxyns0/CARD-43_RELEASE.png?rlkey=627mjcma4jzu0i0g0mwc1p21r&st=a5ybxnfg',
+      'https://dl.dropboxusercontent.com/scl/fi/byk3zm1opjaucvmw5mahh/CARD-44_LOVE.png?rlkey=sc07wti86ru8kyxk9t92q1xrw&st=f4k75mnh',
+      'https://dl.dropboxusercontent.com/scl/fi/ygnwvdztdjnj3o7hkiucn/CARD-BACKSIDE.png?rlkey=7uceguotyuhq4ra9z6ohlsssr&st=vkwyvoqm'
+    ];
+
+    /* ---------- Build DOM ---------- */
+    const track = document.getElementById('track');
+    const scroller = document.getElementById('scroller');
+    const revealPanel = document.getElementById('revealPanel');
+    const revealWord = document.getElementById('revealWord');
+    const closeWrap = document.getElementById('closeWrap');
+    const closeBtn = document.getElementById('closeBtn');
+
+    const BACK = IMAGES[IMAGES.length-1];
+    const fronts = IMAGES.slice(0, IMAGES.length-1);
+
+    // create two sets if needed for long scrolling; but because scrolling is manual, only one set is enough
+    fronts.forEach((src, i)=>{
+      const c = createCard(src, i);
+      track.appendChild(c);
+    });
+
+    function createCard(src, i){
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.dataset.index = i;
+      card.dataset.src = src;
+      card.style.zIndex = i;  
+
+      const inner = document.createElement('div'); inner.className = 'card__inner';
+
+      const backFace = document.createElement('div'); backFace.className = 'face back';
+      const backImg = document.createElement('img'); backImg.src = BACK; backImg.alt = 'back'; backFace.appendChild(backImg);
+
+      const frontFace = document.createElement('div'); frontFace.className = 'face front';
+      const frontImg = document.createElement('img'); frontImg.src = src; frontImg.alt = 'front'; frontFace.appendChild(frontImg);
+
+      inner.appendChild(backFace); inner.appendChild(frontFace);
+      card.appendChild(inner);
+
+/* removed click behavior */
+
+      return card;
+    }
+
+    /* ---------- Center detection (scroll-snap assisted) ---------- */
+    let ticking = false;
+    function onScroll(){
+      if(!ticking){
+        window.requestAnimationFrame(()=>{
+          updateCenter();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }
+    scroller.addEventListener('scroll', onScroll, {passive:true});
+
+    function updateCenter(){
+      const scRect = scroller.getBoundingClientRect();
+      const centerX = scRect.left + scRect.width/2;
+      const cards = Array.from(document.querySelectorAll('.card'));
+      let closest = null; let closestDist = Infinity;
+      cards.forEach(c=>{
+        c.classList.remove('center');
+        const r = c.getBoundingClientRect();
+        const cx = r.left + r.width/2;
+        const d = Math.abs(cx - centerX);
+        if(d < closestDist){ closestDist = d; closest = c; }
+      });
+      if(closest) closest.classList.add('center');
+    }
+
+/* ---------- Make only center card clickable ---------- */
+scroller.addEventListener('click', (e) => {
+  const center = document.querySelector('.card.center');
+  if(!center) return;
+  // only flip if not already selected
+  if(!center.classList.contains('selected')){
+    selectCard(center);
+  }
+});
+
+    // initial center setup after images load
+    window.addEventListener('load', ()=>{
+      // small scroll tweak to ensure snapping works and center is set
+      setTimeout(()=>{ updateCenter(); }, 120);
+    });
+
+    /* ---------- Selection logic ---------- */
+    function selectCard(card){
+      // mark selected
+      card.classList.add('selected');
+      card.classList.add('flipped');
+      // blur others
+      document.querySelectorAll('.card').forEach(c=>{ if(c !== card) c.classList.add('blur'); });
+      // show reveal panel
+      const keyword = extractKeyword(card.dataset.src);
+      revealWord.textContent = keyword;
+      revealPanel.style.display = 'flex';
+      closeWrap.style.display = 'block';
+      // make closeBtn active
+      closeBtn.addEventListener('click', resetSelection);
+    }
+
+    function resetSelection(e){
+      // if link, allow navigation (for now default is #home)
+      document.querySelectorAll('.card').forEach(c=>{ c.classList.remove('selected','flipped','blur'); });
+      revealPanel.style.display = 'none';
+      closeWrap.style.display = 'none';
+    }
+
+    function extractKeyword(url){
+      try{
+        const parts = url.split('/');
+        const filename = parts[parts.length-1].split('?')[0];
+        const name = filename.replace(/\.(png|jpg|jpeg)$/i, '');
+        // find first underscore after CARD-XX_
+        const idx = name.indexOf('_');
+        let key = (idx>=0) ? name.slice(idx+1) : name;
+        // replace underscores with space, keep hyphens so hyphenated words stay hyphenated
+        key = key.replace(/_/g, ' ');
+        // uppercase
+        return key.toUpperCase();
+      }catch(err){ return 'GUIDANCE'; }
+    }
+
+    /* ---------- Accessibility: keyboard select center card on Enter ---------- */
+    scroller.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){
+        const center = document.querySelector('.card.center');
+        if(center) selectCard(center);
+      }
+    });
+
+    // make scroller horizontally draggable with pointer for desktop convenience
+    (function enableDragToScroll(){
+      let isDown = false, startX, scrollLeft;
+      scroller.addEventListener('pointerdown', (e)=>{
+        isDown = true; scroller.setPointerCapture(e.pointerId);
+        startX = e.clientX; scrollLeft = scroller.scrollLeft;
+      });
+      scroller.addEventListener('pointermove', (e)=>{
+        if(!isDown) return;
+        const dx = e.clientX - startX; scroller.scrollLeft = scrollLeft - dx;
+      });
+      scroller.addEventListener('pointerup', (e)=>{ isDown=false; scroller.releasePointerCapture(e.pointerId); updateCenter(); });
+      scroller.addEventListener('pointercancel', ()=>{ isDown=false; });
+    })();
+
+    // preload images for smoothness
+    function preload(urls){ urls.forEach(u=>{ const i=new Image(); i.src = u; }); }
+    preload(IMAGES);
+
+  </script>
+</body>
+</html>
