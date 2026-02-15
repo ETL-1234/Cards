@@ -28,6 +28,7 @@ html,body{
   display:flex;
   flex-direction:column;
   align-items:center;
+  overflow:visible;
 }
 
 .viewport{
@@ -67,7 +68,7 @@ html,body{
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
-  margin-top:120px;   /* creates real lift space */
+  margin-top:40px;   /* creates real lift space */
   transform-origin:center;
   transition:transform 300ms ease;
   cursor:pointer;
