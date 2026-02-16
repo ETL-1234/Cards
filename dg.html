@@ -310,10 +310,18 @@ scroller.addEventListener('scroll', () => {
 
 /* ---------- SELECT CENTER CARD ---------- */
 scroller.addEventListener('click', ()=>{
+
   const center = document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
+  /* -------- LAZY LOAD FRONT IMAGE -------- */
+  const img = center.querySelector('.face.front img');
+  if(!img.src){
+    img.src = img.dataset.src;
+  }
+
   center.classList.add('selected','flipped');
+
   document.querySelectorAll('.card').forEach(c=>{
     if(c !== center) c.classList.add('blur');
   });
@@ -321,7 +329,19 @@ scroller.addEventListener('click', ()=>{
   const keyword = extractKeyword(center.dataset.src);
   revealWord.textContent = keyword;
   revealPanel.style.display = "flex";
+
+  /* -------- SAVE DAILY CARD -------- */
+  const today = new Date().toISOString().split('T')[0];
+
+  const index = Array.from(document.querySelectorAll('.card')).indexOf(center);
+
+  localStorage.setItem('dailyCard', JSON.stringify({
+    cardIndex: index,
+    date: today
+  }));
+
 });
+
 
 /* ---------- EXTRACT WORD ---------- */
 function extractKeyword(url){
@@ -342,38 +362,45 @@ window.addEventListener('load', () => {
     scroller.scrollLeft = halfWidth / 2;
 
     setTimeout(updateCenter, 50);
-const saved = JSON.parse(localStorage.getItem('dailyCard'));
 
-if(saved){
-  const now = Date.now();
+    /* -------- CHECK FOR SAVED DAILY CARD -------- */
 
-  if(now - saved.timestamp < DAY_MS){
+    const saved = JSON.parse(localStorage.getItem('dailyCard'));
+    const today = new Date().toISOString().split('T')[0];
 
-    const cards = document.querySelectorAll('.card');
-    const savedCard = cards[saved.cardIndex];
+    if(saved && saved.date === today){
 
-    if(savedCard){
+      const cards = document.querySelectorAll('.card');
+      const savedCard = cards[saved.cardIndex];
 
-      savedCard.classList.add('selected','flipped');
+      if(savedCard){
 
-      document.querySelectorAll('.card').forEach(c=>{
-        if(c !== savedCard) c.classList.add('blur');
-      });
+        /* Lazy load image */
+        const img = savedCard.querySelector('.face.front img');
+        if(!img.src){
+          img.src = img.dataset.src;
+        }
 
-      const keyword = extractKeyword(savedCard.dataset.src);
-      revealWord.textContent = keyword;
-      revealPanel.style.display = "flex";
+        savedCard.classList.add('selected','flipped');
 
+        cards.forEach(c=>{
+          if(c !== savedCard) c.classList.add('blur');
+        });
+
+        const keyword = extractKeyword(savedCard.dataset.src);
+        revealWord.textContent = keyword;
+        revealPanel.style.display = "flex";
+
+      }
+
+    }else{
+      localStorage.removeItem('dailyCard');
     }
-
-  }else{
-    localStorage.removeItem('dailyCard');
-  }
-}
 
   });
 
 });
+
 
 
 </script>
