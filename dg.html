@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Daily Guidance</title>
 
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 <style>
 :root{
@@ -343,6 +342,34 @@ window.addEventListener('load', () => {
     scroller.scrollLeft = halfWidth / 2;
 
     setTimeout(updateCenter, 50);
+const saved = JSON.parse(localStorage.getItem('dailyCard'));
+
+if(saved){
+  const now = Date.now();
+
+  if(now - saved.timestamp < DAY_MS){
+
+    const cards = document.querySelectorAll('.card');
+    const savedCard = cards[saved.cardIndex];
+
+    if(savedCard){
+
+      savedCard.classList.add('selected','flipped');
+
+      document.querySelectorAll('.card').forEach(c=>{
+        if(c !== savedCard) c.classList.add('blur');
+      });
+
+      const keyword = extractKeyword(savedCard.dataset.src);
+      revealWord.textContent = keyword;
+      revealPanel.style.display = "flex";
+
+    }
+
+  }else{
+    localStorage.removeItem('dailyCard');
+  }
+}
 
   });
 
