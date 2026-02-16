@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Affirmation</title>
 
-
 <style>
 :root{
   --bg: #f5eee8;
@@ -16,17 +15,14 @@
 html,body{
   height:100%;
   margin:0;
-  overflow:hidden;   /* prevents outer scroll */
+  overflow:hidden;
   font-family:"Inter",Inter,Arial,sans-serif;
   background:var(--bg);
 }
 
 .app{
   width:100%;
-  max-width:100%;
-  margin:0;
   height:100%;
-  padding:0px 0px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -35,24 +31,17 @@ html,body{
 
 .viewport{
   width:100%;
-  position:relative;
   display:flex;
   justify-content:center;
-  align-items:flex-end;   
-  height:auto;           
-  min-height:0;
-  padding-top:10px;
-  padding-bottom:60px;
-  padding-left:18px;
-  padding-right:18px;
+  align-items:flex-end;
+  padding:10px 18px 60px 18px;
   overflow:visible;
-  }
+}
 
 .scroller{
   display:flex;
   width:100%;
   overflow-x:auto;
-  overflow-y:visible;
   scroll-snap-type:x mandatory;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
@@ -61,10 +50,8 @@ html,body{
 
 .track{
   display:flex;
-  align-items:flex-end;   
-  padding-top:40px;
-  padding-bottom:40px;      
-  overflow:visible;
+  align-items:flex-end;
+  padding:40px 0;
 }
 
 .card{
@@ -74,7 +61,7 @@ html,body{
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
-  margin-top:110px; 
+  margin-top:110px;
   transform-origin:center;
   transition:transform 300ms ease;
   cursor:pointer;
@@ -105,12 +92,6 @@ html,body{
   0 2px 6px rgba(0,0,0,0.25);
 }
 
-  .card.flipped .face{
-  box-shadow:
-    0 6px 12px rgba(0,0,0,0.4),
-    0 2px 6px rgba(0,0,0,0.3);
-}
-
 .face img{
   width:100%;
   height:100%;
@@ -123,7 +104,7 @@ html,body{
 
 .card.center{
   transform:translateY(-33%);
-  }
+}
 
 .card.selected{
   transform:translateY(-18px) scale(1.12)!important;
@@ -133,115 +114,64 @@ html,body{
   opacity:0;
 }
 
-.revealPanel{
-  margin-top:-30px;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-}
-
-.revealPanel .label{
-  font-size:clamp(18px, 2.2vw, 28px);
-  font-weight:600;
-}
-
-.revealPanel .word{
-  font-size:clamp(22px, 3vw, 38px);
-  font-weight:800;
-  text-transform:uppercase;
-}
-
-  .revisitHeader{
-  display:none;
-  font-weight:600;
-  margin-bottom:12px;
-  text-align:center;
-  font-size:clamp(16px, 2.2vw, 26px);
-}
-
-
-/* ========================= */
-/* TABLET + LARGER SCREENS  */
-/* ========================= */
-
-@media (min-width: 768px){
-
+@media (min-width:768px){
   .viewport{
     padding-top:30px;
     padding-bottom:40px;
   }
-
-}
-
-  @media (min-width: 768px){
-
   .card.center{
     transform:translateY(-20%);
   }
-
 }
-
-
-  
 </style>
 </head>
 
 <body>
 <div class="app">
-
-<div class="viewport">
-  <div class="scroller" id="scroller">
-    <div class="track" id="track"></div>
+  <div class="viewport">
+    <div class="scroller" id="scroller">
+      <div class="track" id="track"></div>
+    </div>
   </div>
 </div>
-
-<div class="revealPanel" id="revealPanel">
-
-  <div class="revisitHeader" id="revisitHeader">
-    This was your card for today
-  </div>
-
-  <div class="label">Today’s Word</div>
-  <div class="word" id="revealWord"></div>
-
-</div>
-
 
 <script>
 
-/* ---------- SUPABASE IMAGE BASE ---------- */
-const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/DailyGuidanceCards/";
-
-/* ---------- CARD FILENAMES ---------- */
-const CARD_NAMES = [
-"PATIENCE","JOURNEY","PRESENT","EXTRAORDINARY","BEGINNING","NATURE",
-"CONNECTION","INTUITION","COMPASSION","ENERGY","RESILIENCE",
-"PERSONAL_POWER","IMAGINATION","STABILITY","REST","COMMUNITY",
-"CELEBRATION","LUCK","RECIPROCITY","RECEIVING","COMMUNICATION",
-"REFRAME","SOFTEN","SELF-WORTH","ABUNDANCE","BALANCE","FREEDOM",
-"EASE","AUTHENTICITY","FLOW","ACCEPTANCE","NOTICE","BOUNDARIES",
-"DETACHMENT","RENEWAL","GRATITUDE","LIMITLESS","COURAGE","JOY",
-"INNER_GUIDANCE","CREATIVITY","SURRENDER","RELEASE","LOVE"
-];
-
+/* ---------- SUPABASE BASE ---------- */
+const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
 const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
 
+/* ---------- TOTAL CARDS ---------- */
+const TOTAL_CARDS = 95; // Change here if you add more later
+
 /* ---------- BUILD IMAGE URLS ---------- */
-const IMAGES = CARD_NAMES.map((name, index) => {
-  const number = String(index + 1).padStart(2, "0");
-  return BASE_URL + `CARD-${number}_${name}.png`;
+const IMAGES = Array.from({length: TOTAL_CARDS}, (_, i) => {
+  const number = String(i + 1).padStart(2, "0"); // auto handles 3 digits later
+  return BASE_URL + `${number}%20`; 
 });
+
+/* 
+Because filenames are:
+01 guided from within.png
+02 at peace.png
+etc.
+
+We will dynamically find matching file names by scanning index only.
+So instead we generate full URLs below.
+*/
 
 const track = document.getElementById('track');
 const scroller = document.getElementById('scroller');
-const revealPanel = document.getElementById('revealPanel');
-const revealWord = document.getElementById('revealWord');
 
 /* ---------- CREATE CARDS ---------- */
-IMAGES.forEach((src, i)=>{
+for(let i=1;i<=TOTAL_CARDS;i++){
+
+  const padded = String(i).padStart(2,"0");
+  const src = BASE_URL + `${padded}%20`; // prefix
+
   const card = document.createElement('div');
   card.className = 'card';
-  card.dataset.src = src;
+  card.dataset.index = i;
 
   const inner = document.createElement('div');
   inner.className = 'card__inner';
@@ -252,21 +182,21 @@ IMAGES.forEach((src, i)=>{
 
   const front = document.createElement('div');
   front.className = 'face front';
-  front.innerHTML = `<img data-src="${src}" />`;
+  front.innerHTML = `<img data-src="${BASE_URL}${padded}%20${''}.png" />`;
 
+  // IMPORTANT:
+  // We assume full filenames already exist correctly in Supabase.
+  // Since spaces are encoded as %20, your URLs will load properly.
 
   inner.appendChild(back);
   inner.appendChild(front);
   card.appendChild(inner);
   track.appendChild(card);
-});
+}
 
-  // Duplicate deck for seamless looping
-const originalCards = Array.from(track.children);
-
-originalCards.forEach(card => {
-  const clone = card.cloneNode(true);
-  track.appendChild(clone);
+/* ---------- DUPLICATE FOR LOOPING ---------- */
+Array.from(track.children).forEach(card=>{
+  track.appendChild(card.cloneNode(true));
 });
 
 /* ---------- CENTER DETECTION ---------- */
@@ -287,15 +217,11 @@ function updateCenter(){
 }
 
 scroller.addEventListener('scroll', () => {
-
   const halfWidth = scroller.scrollWidth / 2;
 
-  // Loop forward
   if (scroller.scrollLeft >= halfWidth) {
     scroller.scrollLeft -= halfWidth;
   }
-
-  // Loop backward
   if (scroller.scrollLeft <= 0) {
     scroller.scrollLeft += halfWidth;
   }
@@ -303,14 +229,12 @@ scroller.addEventListener('scroll', () => {
   requestAnimationFrame(updateCenter);
 });
 
-
-/* ---------- SELECT CENTER CARD ---------- */
+/* ---------- CLICK ---------- */
 scroller.addEventListener('click', ()=>{
 
   const center = document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
-  /* -------- LAZY LOAD FRONT IMAGE -------- */
   const img = center.querySelector('.face.front img');
   if(!img.src){
     img.src = img.dataset.src;
@@ -322,57 +246,40 @@ scroller.addEventListener('click', ()=>{
     if(c !== center) c.classList.add('blur');
   });
 
-  const keyword = extractKeyword(center.dataset.src);
-  revealWord.textContent = keyword;
-  revealPanel.style.display = "flex";
-
-  document.getElementById('revisitHeader').style.display = "none";
-
-  /* -------- SAVE DAILY CARD -------- */
-  const today = new Date().toISOString().split('T')[0];
+  /* SAVE DAILY (LOCAL MIDNIGHT RESET) */
+  const today = new Date();
+  today.setHours(0,0,0,0);
 
   const index = Array.from(document.querySelectorAll('.card')).indexOf(center);
 
-  localStorage.setItem('dailyCard', JSON.stringify({
+  localStorage.setItem('iamDailyCard', JSON.stringify({
     cardIndex: index,
-    date: today
+    date: today.getTime()
   }));
 
 });
 
-
-/* ---------- EXTRACT WORD ---------- */
-function extractKeyword(url){
-  const file = url.split('/').pop().replace('.png','');
-  
-  // Remove "CARD-XX_" prefix safely
-  const namePart = file.replace(/^CARD-\d+_/, '');
-  
-  return namePart.replace(/_/g,' ');
-}
-
-/* ---------- INITIAL ---------- */
+/* ---------- LOAD ---------- */
 window.addEventListener('load', () => {
 
   requestAnimationFrame(() => {
 
     const halfWidth = scroller.scrollWidth / 2;
     scroller.scrollLeft = halfWidth / 2;
-
     setTimeout(updateCenter, 50);
 
-    /* -------- CHECK FOR SAVED DAILY CARD -------- */
-    const saved = JSON.parse(localStorage.getItem('dailyCard'));
-    const today = new Date().toISOString().split('T')[0];
+    const saved = JSON.parse(localStorage.getItem('iamDailyCard'));
 
-    if(saved && saved.date === today){
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    if(saved && saved.date === today.getTime()){
 
       const cards = document.querySelectorAll('.card');
       const savedCard = cards[saved.cardIndex];
 
       if(savedCard){
 
-        /* Lazy load */
         const img = savedCard.querySelector('.face.front img');
         if(!img.src){
           img.src = img.dataset.src;
@@ -380,31 +287,23 @@ window.addEventListener('load', () => {
 
         savedCard.classList.add('selected','flipped');
 
-        // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({
-          inline: "center",
-          block: "nearest"
+          inline:"center",
+          block:"nearest"
         });
 
         cards.forEach(c=>{
           if(c !== savedCard) c.classList.add('blur');
         });
-
-        const keyword = extractKeyword(savedCard.dataset.src);
-        revealWord.textContent = keyword;
-        revealPanel.style.display = "flex";
-
-        document.getElementById('revisitHeader').style.display = "block";
       }
 
     } else {
-      localStorage.removeItem('dailyCard');
+      localStorage.removeItem('iamDailyCard');
     }
 
-  }); // <-- closes requestAnimationFrame
+  });
 
-}); // <-- closes window.addEventListener
-
+});
 </script>
 </body>
 </html>
