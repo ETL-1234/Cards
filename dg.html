@@ -368,54 +368,39 @@ window.addEventListener('load', () => {
 
     if(saved && saved.date === today){
 
-      const cards = document.querySelectorAll('.card');
-      const total = cards.length / 2; // original deck size
-      const normalizedIndex = saved.cardIndex % total;
+  const cards = document.querySelectorAll('.card');
+  const savedCard = cards[saved.cardIndex];
 
-// pick the duplicate in the second half (the visible centered half)
+  if(savedCard){
 
-      const savedCard = cards[normalizedIndex + total];
-
-
-      if(savedCard){
-
-        /* Lazy load image */
-        const img = savedCard.querySelector('.face.front img');
-        if(!img.src){
-          img.src = img.dataset.src;
-        }
-
-        savedCard.classList.add('selected','flipped');
-
-        // Force center scroll to the saved card
-
-        const scrollerRect = scroller.getBoundingClientRect();
-        const cardRect = savedCard.getBoundingClientRect();
-
-
-        const offset = savedCard.offsetLeft - (scrollerRect.width / 2) + (cardRect.width / 2);
-        scroller.scrollLeft = offset;
-
-
-        cards.forEach(c=>{
-          if(c !== savedCard) c.classList.add('blur');
-        });
-
-        const keyword = extractKeyword(savedCard.dataset.src);
-        revealWord.textContent = keyword;
-        revealPanel.style.display = "flex";
-
-        document.getElementById('revisitHeader').style.display = "block";
-
-      }
-
-    }else{
-      localStorage.removeItem('dailyCard');
+    /* Lazy load */
+    const img = savedCard.querySelector('.face.front img');
+    if(!img.src){
+      img.src = img.dataset.src;
     }
 
-  });
+    savedCard.classList.add('selected','flipped');
 
-});
+    // SCROLL DIRECTLY TO THAT CARD
+    savedCard.scrollIntoView({
+      inline: "center",
+      block: "nearest"
+    });
+
+    cards.forEach(c=>{
+      if(c !== savedCard) c.classList.add('blur');
+    });
+
+    const keyword = extractKeyword(savedCard.dataset.src);
+    revealWord.textContent = keyword;
+    revealPanel.style.display = "flex";
+
+    document.getElementById('revisitHeader').style.display = "block";
+  }
+
+}else{
+  localStorage.removeItem('dailyCard');
+}
 
 
 
