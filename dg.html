@@ -237,7 +237,8 @@ IMAGES.forEach((src, i)=>{
 
   const front = document.createElement('div');
   front.className = 'face front';
-  front.innerHTML = `<img src="${src}" />`;
+  front.innerHTML = `<img data-src="${src}" />`;
+
 
   inner.appendChild(back);
   inner.appendChild(front);
