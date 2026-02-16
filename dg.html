@@ -369,7 +369,13 @@ window.addEventListener('load', () => {
     if(saved && saved.date === today){
 
       const cards = document.querySelectorAll('.card');
-      const savedCard = cards[saved.cardIndex];
+      const total = cards.length / 2; // original deck size
+      const normalizedIndex = saved.cardIndex % total;
+
+// pick the duplicate in the second half (the visible centered half)
+
+      const savedCard = cards[normalizedIndex + total];
+
 
       if(savedCard){
 
@@ -380,6 +386,16 @@ window.addEventListener('load', () => {
         }
 
         savedCard.classList.add('selected','flipped');
+
+        // Force center scroll to the saved card
+
+        const scrollerRect = scroller.getBoundingClientRect();
+        const cardRect = savedCard.getBoundingClientRect();
+
+
+        const offset = savedCard.offsetLeft - (scrollerRect.width / 2) + (cardRect.width / 2);
+        scroller.scrollLeft = offset;
+
 
         cards.forEach(c=>{
           if(c !== savedCard) c.classList.add('blur');
