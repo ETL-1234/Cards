@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Affirmation</title>
+<title>I Am Cards</title>
 
 <style>
 :root{
@@ -22,10 +22,7 @@ html,body{
 
 .app{
   width:100%;
-  max-width:100%;
-  margin:0;
   height:100%;
-  padding:0px 0px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -34,16 +31,10 @@ html,body{
 
 .viewport{
   width:100%;
-  position:relative;
   display:flex;
   justify-content:center;
   align-items:flex-end;   
-  height:auto;           
-  min-height:0;
-  padding-top:10px;
-  padding-bottom:60px;
-  padding-left:18px;
-  padding-right:18px;
+  padding:10px 18px 60px 18px;
   overflow:visible;
 }
 
@@ -61,9 +52,7 @@ html,body{
 .track{
   display:flex;
   align-items:flex-end;   
-  padding-top:40px;
-  padding-bottom:40px;      
-  overflow:visible;
+  padding:40px 0;
 }
 
 .card{
@@ -73,15 +62,13 @@ html,body{
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
-  margin-top:110px;
-  transform-origin:center;
+  margin-top:110px; 
   transition:transform 300ms ease;
   cursor:pointer;
   perspective:1200px;
 }
 
 .card__inner{
-  position:relative;
   width:100%;
   height:100%;
   transform-style:preserve-3d;
@@ -98,18 +85,17 @@ html,body{
   border-radius:16px;
   overflow:hidden;
   backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
   box-shadow:
   0 6px 12px rgba(0,0,0,0.35),
   0 2px 6px rgba(0,0,0,0.25);
 }
 
-   .card.flipped .face{
+.card.flipped .face{
   box-shadow:
-    0 6px 12px rgba(0,0,0,0.4),
-    0 2px 6px rgba(0,0,0,0.3);
+  0 6px 12px rgba(0,0,0,0.4),
+  0 2px 6px rgba(0,0,0,0.3);
 }
-  
+
 .face img{
   width:100%;
   height:100%;
@@ -132,25 +118,38 @@ html,body{
   opacity:0;
 }
 
-  .revealPanel{
+.revealPanel{
   margin-top:-30px;
   display:none;
   flex-direction:column;
   align-items:center;
 }
- /* ========================= */
-/* TABLET + LARGER SCREENS  */
-/* ========================= */
+
+.revealPanel .label{
+  font-size:clamp(18px, 2.2vw, 28px);
+  font-weight:600;
+}
+
+.revealPanel .word{
+  font-size:clamp(22px, 3vw, 38px);
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+.revisitHeader{
+  display:none;
+  font-weight:600;
+  margin-bottom:12px;
+  text-align:center;
+  font-size:clamp(16px, 2.2vw, 26px);
+}
 
 @media (min-width:768px){
   .viewport{
     padding-top:30px;
     padding-bottom:40px;
   }
-}
-  @media (min-width: 768px){
-
-    .card.center{
+  .card.center{
     transform:translateY(-20%);
   }
 }
@@ -159,48 +158,47 @@ html,body{
 
 <body>
 <div class="app">
-  <div class="viewport">
-    <div class="scroller" id="scroller">
-      <div class="track" id="track"></div>
-    </div>
+
+<div class="viewport">
+  <div class="scroller" id="scroller">
+    <div class="track" id="track"></div>
   </div>
+</div>
+
+<div class="revealPanel" id="revealPanel">
+  <div class="revisitHeader" id="revisitHeader">
+    This was your card for today
+  </div>
+  <div class="label">Card Number</div>
+  <div class="word" id="revealWord"></div>
 </div>
 
 <script>
 
-/* ---------- SUPABASE BASE ---------- */
+/* ---------- CONFIG ---------- */
 const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
 const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
-
-/* ---------- TOTAL CARDS ---------- */
-const TOTAL_CARDS = 95; // Change here if you add more later
+const TOTAL_CARDS = 95; // change anytime
 
 /* ---------- BUILD IMAGE URLS ---------- */
 const IMAGES = Array.from({length: TOTAL_CARDS}, (_, i) => {
-  const number = String(i + 1).padStart(2, "0"); // auto handles 3 digits later
-  return BASE_URL + `${number}%20`; 
+  const number = String(i + 1).padStart(3, "0");
+  return BASE_URL + number + ".png";
 });
-
-/* 
-Because filenames are:
-01 guided from within.png
-02 at peace.png etc.
-We will dynamically find matching file names by scanning index only.
-So instead we generate full URLs below.
-*/
 
 const track = document.getElementById('track');
 const scroller = document.getElementById('scroller');
+const revealPanel = document.getElementById('revealPanel');
+const revealWord = document.getElementById('revealWord');
 
 /* ---------- CREATE CARDS ---------- */
-for(let i=1;i<=TOTAL_CARDS;i++){
-
-  const padded = String(i).padStart(2,"0");
-  const src = BASE_URL + `${padded}%20`; // prefix
+IMAGES.forEach((src, i)=>{
+  const number = String(i + 1).padStart(3,"0");
 
   const card = document.createElement('div');
   card.className = 'card';
-  card.dataset.index = i;
+  card.dataset.number = number;
+  card.dataset.src = src;
 
   const inner = document.createElement('div');
   inner.className = 'card__inner';
@@ -211,19 +209,15 @@ for(let i=1;i<=TOTAL_CARDS;i++){
 
   const front = document.createElement('div');
   front.className = 'face front';
-  front.innerHTML = `<img data-src="${BASE_URL}${padded}%20${''}.png" />`;
-
-  // IMPORTANT:
-  // We assume full filenames already exist correctly in Supabase.
-  // Since spaces are encoded as %20, your URLs will load properly.
+  front.innerHTML = `<img data-src="${src}" />`;
 
   inner.appendChild(back);
   inner.appendChild(front);
   card.appendChild(inner);
   track.appendChild(card);
-}
+});
 
-/* ---------- DUPLICATE FOR LOOPING ---------- */
+/* Duplicate deck */
 Array.from(track.children).forEach(card=>{
   track.appendChild(card.cloneNode(true));
 });
@@ -232,112 +226,84 @@ Array.from(track.children).forEach(card=>{
 function updateCenter(){
   const scRect = scroller.getBoundingClientRect();
   const centerX = scRect.left + scRect.width/2;
-  let closest=null, closestDist=Infinity;
+  let closest=null, dist=Infinity;
 
   document.querySelectorAll('.card').forEach(c=>{
     c.classList.remove('center');
     const r = c.getBoundingClientRect();
     const cx = r.left + r.width/2;
-    const d = Math.abs(cx - centerX);
-    if(d < closestDist){ closestDist = d; closest = c; }
+    const d = Math.abs(cx-centerX);
+    if(d<dist){dist=d;closest=c;}
   });
-
   if(closest) closest.classList.add('center');
 }
 
-scroller.addEventListener('scroll', () => {
-  const halfWidth = scroller.scrollWidth / 2;
-
-  if (scroller.scrollLeft >= halfWidth) {
-    scroller.scrollLeft -= halfWidth;
-  }
-  if (scroller.scrollLeft <= 0) {
-    scroller.scrollLeft += halfWidth;
-  }
-
+scroller.addEventListener('scroll',()=>{
+  const half = scroller.scrollWidth/2;
+  if(scroller.scrollLeft>=half) scroller.scrollLeft-=half;
+  if(scroller.scrollLeft<=0) scroller.scrollLeft+=half;
   requestAnimationFrame(updateCenter);
 });
 
-/* ---------- SELECT CENTER CARD ---------- */
-scroller.addEventListener('click', ()=>{
-
-  const center = document.querySelector('.card.center');
+/* ---------- CLICK ---------- */
+scroller.addEventListener('click',()=>{
+  const center=document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
-/* -------- LAZY LOAD FRONT IMAGE -------- */
-  const img = center.querySelector('.face.front img');
-  if(!img.src){
-    img.src = img.dataset.src;
-  }
+  const img=center.querySelector('.face.front img');
+  if(!img.src) img.src=img.dataset.src;
 
   center.classList.add('selected','flipped');
 
   document.querySelectorAll('.card').forEach(c=>{
-    if(c !== center) c.classList.add('blur');
+    if(c!==center) c.classList.add('blur');
   });
 
-  /* SAVE DAILY (LOCAL MIDNIGHT RESET) */
-  const today = new Date();
-  today.setHours(0,0,0,0);
+  revealWord.textContent=center.dataset.number;
+  revealPanel.style.display="flex";
+  document.getElementById('revisitHeader').style.display="none";
 
-  const index = Array.from(document.querySelectorAll('.card')).indexOf(center);
+  const today=new Date().toISOString().split('T')[0];
+  const index=Array.from(document.querySelectorAll('.card')).indexOf(center);
 
-  localStorage.setItem('iamDailyCard', JSON.stringify({
-    cardIndex: index,
-    date: today.getTime()
+  localStorage.setItem('dailyIamCard',JSON.stringify({
+    cardIndex:index,
+    date:today
   }));
-
 });
 
-/* ---------- INITIAL ---------- */
-window.addEventListener('load', () => {
+/* ---------- LOAD ---------- */
+window.addEventListener('load',()=>{
+  requestAnimationFrame(()=>{
+    scroller.scrollLeft=scroller.scrollWidth/4;
+    setTimeout(updateCenter,50);
 
-  requestAnimationFrame(() => {
+    const saved=JSON.parse(localStorage.getItem('dailyIamCard'));
+    const today=new Date().toISOString().split('T')[0];
 
-    const halfWidth = scroller.scrollWidth / 2;
-    scroller.scrollLeft = halfWidth / 2;
-    setTimeout(updateCenter, 50);
-    
-/* -------- CHECK FOR SAVED DAILY CARD -------- */
-    const saved = JSON.parse(localStorage.getItem('iamDailyCard'));
-
-    const today = new Date();
-    today.setHours(0,0,0,0);
-
-    if(saved && saved.date === today.getTime()){
-
-      const cards = document.querySelectorAll('.card');
-      const savedCard = cards[saved.cardIndex];
-
+    if(saved && saved.date===today){
+      const cards=document.querySelectorAll('.card');
+      const savedCard=cards[saved.cardIndex];
       if(savedCard){
-    
-        /* Lazy load */
-        const img = savedCard.querySelector('.face.front img');
-        if(!img.src){
-          img.src = img.dataset.src;
-        }
+        const img=savedCard.querySelector('.face.front img');
+        if(!img.src) img.src=img.dataset.src;
 
         savedCard.classList.add('selected','flipped');
-
-    // SCROLL DIRECTLY TO THAT CARD
-        savedCard.scrollIntoView({
-          inline:"center",
-          block:"nearest"
-        });
+        savedCard.scrollIntoView({inline:"center",block:"nearest"});
 
         cards.forEach(c=>{
-          if(c !== savedCard) c.classList.add('blur');
+          if(c!==savedCard) c.classList.add('blur');
         });
+
+        revealWord.textContent=savedCard.dataset.number;
+        revealPanel.style.display="flex";
+        document.getElementById('revisitHeader').style.display="block";
       }
-
-    } else {
-      localStorage.removeItem('iamDailyCard');
+    }else{
+      localStorage.removeItem('dailyIamCard');
     }
-
-}); // <-- closes requestAnimationFrame
-
-}); // <-- closes window.addEventListener
-
+  });
+});
 </script>
 </body>
 </html>
