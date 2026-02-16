@@ -326,6 +326,8 @@ scroller.addEventListener('click', ()=>{
   revealWord.textContent = keyword;
   revealPanel.style.display = "flex";
 
+  document.getElementById('revisitHeader').style.display = "none";
+
   /* -------- SAVE DAILY CARD -------- */
   const today = new Date().toISOString().split('T')[0];
 
