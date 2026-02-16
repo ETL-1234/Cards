@@ -296,7 +296,9 @@ scroller.addEventListener('click',()=>{
 /* ---------- INITIAL ---------- */
 window.addEventListener('load',()=>{
   requestAnimationFrame(()=>{
-    scroller.scrollLeft=scroller.scrollWidth/4;
+   const half = scroller.scrollWidth / 2;
+   scroller.scrollLeft = Math.random() * half;
+
     setTimeout(updateCenter,50);
 
 /* -------- CHECK FOR SAVED DAILY CARD -------- */
