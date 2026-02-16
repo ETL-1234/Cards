@@ -221,6 +221,15 @@ IMAGES.forEach((src, i)=>{
   track.appendChild(card);
 });
 
+  // Duplicate deck for seamless looping
+const originalCards = Array.from(track.children);
+
+originalCards.forEach(card => {
+  const clone = card.cloneNode(true);
+  track.appendChild(clone);
+});
+
+
  // Start centered in the middle of the deck
 window.addEventListener('load', () => {
   const middleIndex = Math.floor(IMAGES.length / 2);
