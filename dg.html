@@ -264,7 +264,23 @@ function updateCenter(){
   if(closest) closest.classList.add('center');
 }
 
-scroller.addEventListener('scroll', ()=> requestAnimationFrame(updateCenter));
+scroller.addEventListener('scroll', () => {
+
+  const halfWidth = scroller.scrollWidth / 2;
+
+  // Loop forward
+  if (scroller.scrollLeft >= halfWidth) {
+    scroller.scrollLeft -= halfWidth;
+  }
+
+  // Loop backward
+  if (scroller.scrollLeft <= 0) {
+    scroller.scrollLeft += halfWidth;
+  }
+
+  requestAnimationFrame(updateCenter);
+});
+
 
 /* ---------- SELECT CENTER CARD ---------- */
 scroller.addEventListener('click', ()=>{
