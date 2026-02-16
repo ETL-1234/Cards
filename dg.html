@@ -255,24 +255,6 @@ originalCards.forEach(card => {
   track.appendChild(clone);
 });
 
-
- // Start centered in the middle of the deck
-window.addEventListener('load', () => {
-  const middleIndex = Math.floor(IMAGES.length / 2);
-  const cards = document.querySelectorAll('.card');
-  const middleCard = cards[middleIndex];
-
-  const scrollerRect = scroller.getBoundingClientRect();
-  const cardRect = middleCard.getBoundingClientRect();
-
-  const offset = middleCard.offsetLeft - (scrollerRect.width / 2) + (cardRect.width / 2);
-
-  scroller.scrollLeft = offset;
-
-  setTimeout(updateCenter, 50);
-});
- 
-
 /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
   const scRect = scroller.getBoundingClientRect();
