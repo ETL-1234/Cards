@@ -280,7 +280,6 @@ scroller.addEventListener('click',()=>{
     if(c!==center) c.classList.add('blur');
   });
 
-  revealWord.textContent=center.dataset.number;
   revealPanel.style.display="flex";
   document.getElementById('revisitHeader').style.display="none";
 
@@ -320,7 +319,6 @@ window.addEventListener('load',()=>{
           if(c!==savedCard) c.classList.add('blur');
         });
 
-        revealWord.textContent=savedCard.dataset.number;
         revealPanel.style.display="flex";
         document.getElementById('revisitHeader').style.display="block";
       }
