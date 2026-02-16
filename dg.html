@@ -151,6 +151,15 @@ html,body{
   text-transform:uppercase;
 }
 
+  .revisitHeader{
+  display:none;
+  font-weight:600;
+  margin-bottom:12px;
+  text-align:center;
+  font-size:clamp(16px, 2.2vw, 26px);
+}
+
+
 /* ========================= */
 /* TABLET + LARGER SCREENS  */
 /* ========================= */
@@ -187,11 +196,16 @@ html,body{
 </div>
 
 <div class="revealPanel" id="revealPanel">
+
+  <div class="revisitHeader" id="revisitHeader">
+    This was your card for today
+  </div>
+
   <div class="label">Today’s Word</div>
   <div class="word" id="revealWord"></div>
-</div>
 
 </div>
+
 
 <script>
 
