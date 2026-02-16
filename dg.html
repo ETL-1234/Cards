@@ -362,47 +362,48 @@ window.addEventListener('load', () => {
     setTimeout(updateCenter, 50);
 
     /* -------- CHECK FOR SAVED DAILY CARD -------- */
-
     const saved = JSON.parse(localStorage.getItem('dailyCard'));
     const today = new Date().toISOString().split('T')[0];
 
     if(saved && saved.date === today){
 
-  const cards = document.querySelectorAll('.card');
-  const savedCard = cards[saved.cardIndex];
+      const cards = document.querySelectorAll('.card');
+      const savedCard = cards[saved.cardIndex];
 
-  if(savedCard){
+      if(savedCard){
 
-    /* Lazy load */
-    const img = savedCard.querySelector('.face.front img');
-    if(!img.src){
-      img.src = img.dataset.src;
+        /* Lazy load */
+        const img = savedCard.querySelector('.face.front img');
+        if(!img.src){
+          img.src = img.dataset.src;
+        }
+
+        savedCard.classList.add('selected','flipped');
+
+        // SCROLL DIRECTLY TO THAT CARD
+        savedCard.scrollIntoView({
+          inline: "center",
+          block: "nearest"
+        });
+
+        cards.forEach(c=>{
+          if(c !== savedCard) c.classList.add('blur');
+        });
+
+        const keyword = extractKeyword(savedCard.dataset.src);
+        revealWord.textContent = keyword;
+        revealPanel.style.display = "flex";
+
+        document.getElementById('revisitHeader').style.display = "block";
+      }
+
+    } else {
+      localStorage.removeItem('dailyCard');
     }
 
-    savedCard.classList.add('selected','flipped');
+  }); // <-- closes requestAnimationFrame
 
-    // SCROLL DIRECTLY TO THAT CARD
-    savedCard.scrollIntoView({
-      inline: "center",
-      block: "nearest"
-    });
-
-    cards.forEach(c=>{
-      if(c !== savedCard) c.classList.add('blur');
-    });
-
-    const keyword = extractKeyword(savedCard.dataset.src);
-    revealWord.textContent = keyword;
-    revealPanel.style.display = "flex";
-
-    document.getElementById('revisitHeader').style.display = "block";
-  }
-
-}else{
-  localStorage.removeItem('dailyCard');
-}
-
-
+}); // <-- closes window.addEventListener
 
 </script>
 </body>
