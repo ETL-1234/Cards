@@ -308,9 +308,19 @@ function extractKeyword(url){
 }
 
 /* ---------- INITIAL ---------- */
-window.addEventListener('load', ()=>{
-  setTimeout(updateCenter, 120);
+window.addEventListener('load', () => {
+
+  requestAnimationFrame(() => {
+
+    const halfWidth = scroller.scrollWidth / 2;
+    scroller.scrollLeft = halfWidth / 2;
+
+    setTimeout(updateCenter, 50);
+
+  });
+
 });
+
 
 </script>
 </body>
