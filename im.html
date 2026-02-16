@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>I Am Cards</title>
+<title>Affimation</title>
 
 <style>
 :root{
@@ -22,7 +22,10 @@ html,body{
 
 .app{
   width:100%;
+  max-width:100%;
+  margin:0;
   height:100%;
+  padding:0px 0px;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -31,10 +34,16 @@ html,body{
 
 .viewport{
   width:100%;
+  position:relative;
   display:flex;
   justify-content:center;
   align-items:flex-end;   
-  padding:10px 18px 60px 18px;
+  height:auto;           
+  min-height:0;
+  padding-top:10px;
+  padding-bottom:60px;
+  padding-left:18px;
+  padding-right:18px;
   overflow:visible;
 }
 
@@ -52,7 +61,9 @@ html,body{
 .track{
   display:flex;
   align-items:flex-end;   
-  padding:40px 0;
+  padding-top:40px;
+  padding-bottom:40px;      
+  overflow:visible;
 }
 
 .card{
@@ -63,6 +74,7 @@ html,body{
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
   margin-top:110px; 
+  transform-origin:center;
   transition:transform 300ms ease;
   cursor:pointer;
   perspective:1200px;
@@ -85,6 +97,7 @@ html,body{
   border-radius:16px;
   overflow:hidden;
   backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
   box-shadow:
   0 6px 12px rgba(0,0,0,0.35),
   0 2px 6px rgba(0,0,0,0.25);
@@ -144,11 +157,20 @@ html,body{
   font-size:clamp(16px, 2.2vw, 26px);
 }
 
+/* ========================= */
+/* TABLET + LARGER SCREENS  */
+/* ========================= */
+
 @media (min-width:768px){
   .viewport{
     padding-top:30px;
     padding-bottom:40px;
   }
+
+  }
+
+  @media (min-width: 768px){
+
   .card.center{
     transform:translateY(-20%);
   }
@@ -245,11 +267,12 @@ scroller.addEventListener('scroll',()=>{
   requestAnimationFrame(updateCenter);
 });
 
-/* ---------- CLICK ---------- */
+/* ---------- SELECT CENTER CARD ---------- */
 scroller.addEventListener('click',()=>{
   const center=document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
+/* -------- LAZY LOAD FRONT IMAGE -------- */
   const img=center.querySelector('.face.front img');
   if(!img.src) img.src=img.dataset.src;
 
@@ -263,6 +286,7 @@ scroller.addEventListener('click',()=>{
   revealPanel.style.display="flex";
   document.getElementById('revisitHeader').style.display="none";
 
+/* -------- SAVE DAILY CARD -------- */
   const today=new Date().toISOString().split('T')[0];
   const index=Array.from(document.querySelectorAll('.card')).indexOf(center);
 
@@ -272,12 +296,13 @@ scroller.addEventListener('click',()=>{
   }));
 });
 
-/* ---------- LOAD ---------- */
+/* ---------- INITIAL ---------- */
 window.addEventListener('load',()=>{
   requestAnimationFrame(()=>{
     scroller.scrollLeft=scroller.scrollWidth/4;
     setTimeout(updateCenter,50);
 
+/* -------- CHECK FOR SAVED DAILY CARD -------- */
     const saved=JSON.parse(localStorage.getItem('dailyIamCard'));
     const today=new Date().toISOString().split('T')[0];
 
@@ -289,6 +314,8 @@ window.addEventListener('load',()=>{
         if(!img.src) img.src=img.dataset.src;
 
         savedCard.classList.add('selected','flipped');
+
+    // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({inline:"center",block:"nearest"});
 
         cards.forEach(c=>{
