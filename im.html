@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Daily Guidance</title>
+
+
+<style>
+:root{
+  --bg: #f5eee8;
+  --card-w: clamp(230px, 70vw, 440px);
+  --overlap-factor: 0.70;
+}
+
+html,body{
+  height:100%;
+  margin:0;
+  overflow:hidden;   /* prevents outer scroll */
+  font-family:"Inter",Inter,Arial,sans-serif;
+  background:var(--bg);
+}
+
+.app{
+  width:100%;
+  max-width:100%;
+  margin:0;
+  height:100%;
+  padding:0px 0px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow:hidden;
+}
+
+.viewport{
+  width:100%;
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;   
+  height:auto;           
+  min-height:0;
+  padding-top:10px;
+  padding-bottom:60px;
+  padding-left:18px;
+  padding-right:18px;
+  overflow:visible;
+  }
+
+.scroller{
+  display:flex;
+  width:100%;
+  overflow-x:auto;
+  overflow-y:visible;
+  scroll-snap-type:x mandatory;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.scroller::-webkit-scrollbar{ display:none; }
+
+.track{
+  display:flex;
+  align-items:flex-end;   
+  padding-top:40px;
+  padding-bottom:40px;      
+  overflow:visible;
+}
+
+.card{
+  flex:0 0 auto;
+  width:var(--card-w);
+  aspect-ratio:750/1050;
+  position:relative;
+  scroll-snap-align:center;
+  margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
+  margin-top:110px; 
+  transform-origin:center;
+  transition:transform 300ms ease;
+  cursor:pointer;
+  perspective:1200px;
+}
+
+.card__inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform 700ms cubic-bezier(.2,.9,.25,1);
+}
+
+.card.flipped .card__inner{
+  transform:rotateY(180deg);
+}
+
+.face{
+  position:absolute;
+  inset:0;
+  border-radius:16px;
+  overflow:hidden;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  box-shadow:
+  0 6px 12px rgba(0,0,0,0.35),
+  0 2px 6px rgba(0,0,0,0.25);
+}
+
+  .card.flipped .face{
+  box-shadow:
+    0 6px 12px rgba(0,0,0,0.4),
+    0 2px 6px rgba(0,0,0,0.3);
+}
+
+.face img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.face.front{
+  transform:rotateY(180deg);
+}
+
+.card.center{
+  transform:translateY(-33%);
+  }
+
+.card.selected{
+  transform:translateY(-18px) scale(1.12)!important;
+}
+
+.card.blur:not(.flipped){
+  opacity:0;
+}
+
+.revealPanel{
+  margin-top:-30px;
+  display:none;
+  flex-direction:column;
+  align-items:center;
+}
+
+.revealPanel .label{
+  font-size:clamp(18px, 2.2vw, 28px);
+  font-weight:600;
+}
+
+.revealPanel .word{
+  font-size:clamp(22px, 3vw, 38px);
+  font-weight:800;
+  text-transform:uppercase;
+}
+
+  .revisitHeader{
+  display:none;
+  font-weight:600;
+  margin-bottom:12px;
+  text-align:center;
+  font-size:clamp(16px, 2.2vw, 26px);
+}
+
+
+/* ========================= */
+/* TABLET + LARGER SCREENS  */
+/* ========================= */
+
+@media (min-width: 768px){
+
+  .viewport{
+    padding-top:30px;
+    padding-bottom:40px;
+  }
+
+}
+
+  @media (min-width: 768px){
+
+  .card.center{
+    transform:translateY(-20%);
+  }
+
+}
+
+
+  
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<div class="viewport">
+  <div class="scroller" id="scroller">
+    <div class="track" id="track"></div>
+  </div>
+</div>
+
+<div class="revealPanel" id="revealPanel">
+
+  <div class="revisitHeader" id="revisitHeader">
+    This was your card for today
+  </div>
+
+  <div class="label">Today’s Word</div>
+  <div class="word" id="revealWord"></div>
+
+</div>
+
+
+<script>
+
+/* ---------- SUPABASE IMAGE BASE ---------- */
+const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/DailyGuidanceCards/";
+
+/* ---------- CARD FILENAMES ---------- */
+const CARD_NAMES = [
+"PATIENCE","JOURNEY","PRESENT","EXTRAORDINARY","BEGINNING","NATURE",
+"CONNECTION","INTUITION","COMPASSION","ENERGY","RESILIENCE",
+"PERSONAL_POWER","IMAGINATION","STABILITY","REST","COMMUNITY",
+"CELEBRATION","LUCK","RECIPROCITY","RECEIVING","COMMUNICATION",
+"REFRAME","SOFTEN","SELF-WORTH","ABUNDANCE","BALANCE","FREEDOM",
+"EASE","AUTHENTICITY","FLOW","ACCEPTANCE","NOTICE","BOUNDARIES",
+"DETACHMENT","RENEWAL","GRATITUDE","LIMITLESS","COURAGE","JOY",
+"INNER_GUIDANCE","CREATIVITY","SURRENDER","RELEASE","LOVE"
+];
+
+const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
+
+/* ---------- BUILD IMAGE URLS ---------- */
+const IMAGES = CARD_NAMES.map((name, index) => {
+  const number = String(index + 1).padStart(2, "0");
+  return BASE_URL + `CARD-${number}_${name}.png`;
+});
+
+const track = document.getElementById('track');
+const scroller = document.getElementById('scroller');
+const revealPanel = document.getElementById('revealPanel');
+const revealWord = document.getElementById('revealWord');
+
+/* ---------- CREATE CARDS ---------- */
+IMAGES.forEach((src, i)=>{
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.dataset.src = src;
+
+  const inner = document.createElement('div');
+  inner.className = 'card__inner';
+
+  const back = document.createElement('div');
+  back.className = 'face back';
+  back.innerHTML = `<img src="${BACK_IMAGE}" />`;
+
+  const front = document.createElement('div');
+  front.className = 'face front';
+  front.innerHTML = `<img data-src="${src}" />`;
+
+
+  inner.appendChild(back);
+  inner.appendChild(front);
+  card.appendChild(inner);
+  track.appendChild(card);
+});
+
+  // Duplicate deck for seamless looping
+const originalCards = Array.from(track.children);
+
+originalCards.forEach(card => {
+  const clone = card.cloneNode(true);
+  track.appendChild(clone);
+});
+
+/* ---------- CENTER DETECTION ---------- */
+function updateCenter(){
+  const scRect = scroller.getBoundingClientRect();
+  const centerX = scRect.left + scRect.width/2;
+  let closest=null, closestDist=Infinity;
+
+  document.querySelectorAll('.card').forEach(c=>{
+    c.classList.remove('center');
+    const r = c.getBoundingClientRect();
+    const cx = r.left + r.width/2;
+    const d = Math.abs(cx - centerX);
+    if(d < closestDist){ closestDist = d; closest = c; }
+  });
+
+  if(closest) closest.classList.add('center');
+}
+
+scroller.addEventListener('scroll', () => {
+
+  const halfWidth = scroller.scrollWidth / 2;
+
+  // Loop forward
+  if (scroller.scrollLeft >= halfWidth) {
+    scroller.scrollLeft -= halfWidth;
+  }
+
+  // Loop backward
+  if (scroller.scrollLeft <= 0) {
+    scroller.scrollLeft += halfWidth;
+  }
+
+  requestAnimationFrame(updateCenter);
+});
+
+
+/* ---------- SELECT CENTER CARD ---------- */
+scroller.addEventListener('click', ()=>{
+
+  const center = document.querySelector('.card.center');
+  if(!center || center.classList.contains('selected')) return;
+
+  /* -------- LAZY LOAD FRONT IMAGE -------- */
+  const img = center.querySelector('.face.front img');
+  if(!img.src){
+    img.src = img.dataset.src;
+  }
+
+  center.classList.add('selected','flipped');
+
+  document.querySelectorAll('.card').forEach(c=>{
+    if(c !== center) c.classList.add('blur');
+  });
+
+  const keyword = extractKeyword(center.dataset.src);
+  revealWord.textContent = keyword;
+  revealPanel.style.display = "flex";
+
+  document.getElementById('revisitHeader').style.display = "none";
+
+  /* -------- SAVE DAILY CARD -------- */
+  const today = new Date().toISOString().split('T')[0];
+
+  const index = Array.from(document.querySelectorAll('.card')).indexOf(center);
+
+  localStorage.setItem('dailyCard', JSON.stringify({
+    cardIndex: index,
+    date: today
+  }));
+
+});
+
+
+/* ---------- EXTRACT WORD ---------- */
+function extractKeyword(url){
+  const file = url.split('/').pop().replace('.png','');
+  
+  // Remove "CARD-XX_" prefix safely
+  const namePart = file.replace(/^CARD-\d+_/, '');
+  
+  return namePart.replace(/_/g,' ');
+}
+
+/* ---------- INITIAL ---------- */
+window.addEventListener('load', () => {
+
+  requestAnimationFrame(() => {
+
+    const halfWidth = scroller.scrollWidth / 2;
+    scroller.scrollLeft = halfWidth / 2;
+
+    setTimeout(updateCenter, 50);
+
+    /* -------- CHECK FOR SAVED DAILY CARD -------- */
+    const saved = JSON.parse(localStorage.getItem('dailyCard'));
+    const today = new Date().toISOString().split('T')[0];
+
+    if(saved && saved.date === today){
+
+      const cards = document.querySelectorAll('.card');
+      const savedCard = cards[saved.cardIndex];
+
+      if(savedCard){
+
+        /* Lazy load */
+        const img = savedCard.querySelector('.face.front img');
+        if(!img.src){
+          img.src = img.dataset.src;
+        }
+
+        savedCard.classList.add('selected','flipped');
+
+        // SCROLL DIRECTLY TO THAT CARD
+        savedCard.scrollIntoView({
+          inline: "center",
+          block: "nearest"
+        });
+
+        cards.forEach(c=>{
+          if(c !== savedCard) c.classList.add('blur');
+        });
+
+        const keyword = extractKeyword(savedCard.dataset.src);
+        revealWord.textContent = keyword;
+        revealPanel.style.display = "flex";
+
+        document.getElementById('revisitHeader').style.display = "block";
+      }
+
+    } else {
+      localStorage.removeItem('dailyCard');
+    }
+
+  }); // <-- closes requestAnimationFrame
+
+}); // <-- closes window.addEventListener
+
+</script>
+</body>
+</html>
