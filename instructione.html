@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cube Swipe Carousel Instructione</title>
+
+<style>
+  body {
+    margin: 0;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .carousel {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 711px;
+    perspective: 1200px;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 0px 0px rgba(0,0,0,0.1);
+  }
+
+  .cube {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+  }
+
+  .face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+  }
+
+  .face img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;   /* 🔑 ensures NO cropping */
+    display: block;
+    pointer-events: none;  /* better swipe handling */
+  }
+
+  /* Dots */
+  .dots {
+    position: absolute;
+    bottom: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 10;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.3);
+  }
+
+  .dot.active {
+    background: rgba(0,0,0,0.7);
+  }
+</style>
+</head>
+
+<body>
+
+<div class="carousel" id="carousel">
+  <div class="cube" id="cube"></div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  /* =====================================================
+     👉 ONLY ADD / REMOVE IMAGE LINKS HERE
+     Everything else adapts automatically
+     ===================================================== */
+  const images = [
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements1.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements2.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements3.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements4.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements5.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements6.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements7.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements8.jpg",
+    "https://hkdgqdmxhtnxtcuqfovq.supabase.co/storage/v1/object/public/MudraInstruction/5Elements9.jpg"
+  ];
+
+  const carousel = document.getElementById("carousel");
+  const cube = document.getElementById("cube");
+  const dotsContainer = document.getElementById("dots");
+
+  let index = 0;
+  let startX = 0;
+  let isAnimating = false;
+
+  const cubeDepth = carousel.offsetWidth / 2;
+
+  function createDots() {
+    dotsContainer.innerHTML = "";
+    images.forEach((_, i) => {
+      const dot = document.createElement("div");
+      dot.className = i === index ? "dot active" : "dot";
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  function updateDots() {
+    [...dotsContainer.children].forEach((dot, i) => {
+      dot.classList.toggle("active", i === index);
+    });
+  }
+
+  function buildFace(src, rotation) {
+    const face = document.createElement("div");
+    face.className = "face";
+    face.style.transform =
+      `rotateY(${rotation}deg) translateZ(${cubeDepth}px)`;
+    face.innerHTML = `<img src="${src}" loading="lazy">`;
+    return face;
+  }
+
+  function renderCube(direction = 1) {
+    if (isAnimating) return;
+    isAnimating = true;
+
+    const nextIndex =
+      (index + direction + images.length) % images.length;
+
+    cube.innerHTML = "";
+    cube.appendChild(buildFace(images[index], 0));
+    cube.appendChild(buildFace(images[nextIndex], direction * 90));
+
+    requestAnimationFrame(() => {
+      cube.style.transform = `rotateY(${-direction * 90}deg)`;
+    });
+
+    setTimeout(() => {
+      index = nextIndex;
+      cube.style.transition = "none";
+      cube.style.transform = "rotateY(0deg)";
+      cube.innerHTML = "";
+      cube.appendChild(buildFace(images[index], 0));
+      cube.offsetHeight; // force reflow
+      cube.style.transition = "transform 0.6s ease";
+      updateDots();
+      isAnimating = false;
+    }, 600);
+  }
+
+  createDots();
+  cube.appendChild(buildFace(images[index], 0));
+
+  // Touch swipe
+  carousel.addEventListener("touchstart", e => {
+    startX = e.touches[0].clientX;
+  });
+
+  carousel.addEventListener("touchend", e => {
+    const diff = e.changedTouches[0].clientX - startX;
+    if (Math.abs(diff) > 40) {
+      renderCube(diff < 0 ? 1 : -1);
+    }
+  });
+</script>
+
+</body>
+</html>
