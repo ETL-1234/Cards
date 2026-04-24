@@ -132,56 +132,25 @@ html,body{
 
  /* every card has permanent gentle arc baseline */
 .card{
-  --baseDrop: 12px;
-  transform:translateY(var(--baseDrop));
+  --curveY:12px;
+  --curveRot:0deg;
+
+  transform:
+    translateY(var(--curveY))
+    rotate(var(--curveRot));
+
+  transform-origin:center bottom;
+  transition:transform 120ms linear;
 }
 
-/* center card pops */
 .card.center{
-  transform:translateY(-33%);
+ transform:
+   translateY(-33%)
+   rotate(0deg);
 }
 
-/* cards around center create the fan */
- .card.left-5{
- transform:translateY(34px) rotate(-10deg);
-}
 
-.card.left-4{
- transform:translateY(26px) rotate(-7deg);
-}
-
-.card.left-3{
- transform:translateY(18px) rotate(-5deg);
-}
-
-.card.left-2{
- transform:translateY(10px) rotate(-3deg);
-}
-
-.card.left-1{
- transform:translateY(4px) rotate(-1.5deg);
-}
-
-.card.right-1{
- transform:translateY(4px) rotate(1.5deg);
-}
-
-.card.right-2{
- transform:translateY(10px) rotate(3deg);
-}
-
-.card.right-3{
- transform:translateY(18px) rotate(5deg);
-}
-
-.card.right-4{
- transform:translateY(26px) rotate(7deg);
-}
-
-.card.right-5{
- transform:translateY(34px) rotate(10deg);
-}
-.revealPanel{
+ .revealPanel{
   margin-top:-30px;
   display:none;
   flex-direction:column;
