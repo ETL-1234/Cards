@@ -289,49 +289,51 @@ originalCards.forEach(card => {
 /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
 
-  const scRect = scroller.getBoundingClientRect();
-  const centerX = scRect.left + scRect.width/2;
+ const cards=[...document.querySelectorAll('.card')];
 
-  let closest=null;
-  let closestIndex=0;
-  let closestDist=Infinity;
+ const scRect=scroller.getBoundingClientRect();
+ const centerX=scRect.left + scRect.width/2;
 
-  const cards=[...document.querySelectorAll('.card')];
+ let closest=null;
+ let closestDist=Infinity;
 
-  cards.forEach((c,i)=>{
-    c.classList.remove(
-      'center',
-     'left-1','left-2','left-3','left-4','left-5',
-     'right-1','right-2','right-3','right-4','right-5'
-    );
+ const maxDist=scRect.width*0.42;
 
-    const r=c.getBoundingClientRect();
-    const cx=r.left + r.width/2;
-    const d=Math.abs(cx-centerX);
+ cards.forEach(card=>{
 
-    if(d<closestDist){
-      closestDist=d;
-      closest=c;
-      closestIndex=i;
-    }
-  });
+   card.classList.remove('center');
 
-  if(closest){
+   const r=card.getBoundingClientRect();
+   const cx=r.left + r.width/2;
 
-    closest.classList.add('center');
+   let dist=cx-centerX;
+   let abs=Math.abs(dist);
 
-    for(let i=1;i<=5;i++){
- if(cards[closestIndex-i]){
-   cards[closestIndex-i].classList.add(`left-${i}`);
+   if(abs < closestDist){
+      closestDist=abs;
+      closest=card;
+   }
+
+   if(abs>maxDist) abs=maxDist;
+
+   let t=abs/maxDist;
+
+   /* smooth parabola */
+   let y=8 + (t*t*28);
+
+   /* smooth fan rotation */
+   let rot=(dist/maxDist)*10;
+
+   card.style.setProperty('--curveY',`${y}px`);
+   card.style.setProperty('--curveRot',`${rot}deg`);
+
+ });
+
+ if(closest){
+   closest.classList.add('center');
  }
- if(cards[closestIndex+i]){
-   cards[closestIndex+i].classList.add(`right-${i}`);
- }
-}
-  }
 
 }
-
 scroller.addEventListener('scroll', () => {
 
   const halfWidth = scroller.scrollWidth / 2;
