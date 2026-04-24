@@ -121,10 +121,6 @@ html,body{
   transform:rotateY(180deg);
 }
 
-.card.center{
- transform:translateY(-33%);
-}
-
 .card.selected{
   transform:translateY(-18px) scale(1.12)!important;
 }
@@ -348,8 +344,6 @@ function updateCenter(){
     if(cards[closestIndex+3]) cards[closestIndex+3].classList.add('right-3');
   }
 
-}
-  
 }
 
 scroller.addEventListener('scroll', () => {
