@@ -134,35 +134,41 @@ html,body{
   opacity:0;
 }
 
-  /* gentle fanned arc */
-.card:nth-child(7n+1){
- transform:translateY(22px) rotate(-8deg);
+  /* default cards stay flat */
+.card{
+  transform:translateY(10px);
 }
 
-.card:nth-child(7n+2){
- transform:translateY(12px) rotate(-5deg);
+/* center card pops */
+.card.center{
+  transform:translateY(-33%);
 }
 
-.card:nth-child(7n+3){
- transform:translateY(4px) rotate(-2deg);
+/* cards around center create the fan */
+.card.left-3{
+  transform:translateY(24px) rotate(-8deg);
 }
 
-.card:nth-child(7n+4){
- transform:translateY(0px);
+.card.left-2{
+  transform:translateY(14px) rotate(-5deg);
 }
 
-.card:nth-child(7n+5){
- transform:translateY(4px) rotate(2deg);
+.card.left-1{
+  transform:translateY(6px) rotate(-2deg);
 }
 
-.card:nth-child(7n+6){
- transform:translateY(12px) rotate(5deg);
+.card.right-1{
+  transform:translateY(6px) rotate(2deg);
 }
 
-.card:nth-child(7n){
- transform:translateY(22px) rotate(8deg);
+.card.right-2{
+  transform:translateY(14px) rotate(5deg);
 }
 
+.card.right-3{
+  transform:translateY(24px) rotate(8deg);
+}
+ 
 .revealPanel{
   margin-top:-30px;
   display:none;
