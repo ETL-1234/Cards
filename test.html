@@ -3,19 +3,20 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Affirmation</title>
+<title>Daily Guidance</title>
+
 
 <style>
 :root{
   --bg: #F8F3EF;
-  --card-w: clamp(220px, 65vw, 420px);
+  --card-w: clamp(230px, 70vw, 440px);
   --overlap-factor: 0.60;
 }
 
 html,body{
   height:100%;
   margin:0;
-  overflow:hidden;
+  overflow:hidden;   /* prevents outer scroll */
   font-family:"Inter",Inter,Arial,sans-serif;
   background:var(--bg);
 }
@@ -45,7 +46,7 @@ html,body{
   padding-left:18px;
   padding-right:18px;
   overflow:visible;
-}
+  }
 
 .scroller{
   display:flex;
@@ -69,7 +70,7 @@ html,body{
 .card{
   flex:0 0 auto;
   width:var(--card-w);
-  aspect-ratio: 666/1026;
+  aspect-ratio:750/1050;
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
@@ -81,6 +82,7 @@ html,body{
 }
 
 .card__inner{
+  position:relative;
   width:100%;
   height:100%;
   transform-style:preserve-3d;
@@ -103,10 +105,10 @@ html,body{
   0 2px 6px rgba(0,0,0,0.25);
 }
 
-.card.flipped .face{
+  .card.flipped .face{
   box-shadow:
-  0 6px 12px rgba(0,0,0,0.4),
-  0 2px 6px rgba(0,0,0,0.3);
+    0 6px 12px rgba(0,0,0,0.4),
+    0 2px 6px rgba(0,0,0,0.3);
 }
 
 .face img{
@@ -121,7 +123,7 @@ html,body{
 
 .card.center{
   transform:translateY(-33%);
-}
+  }
 
 .card.selected{
   transform:translateY(-18px) scale(1.12)!important;
@@ -149,7 +151,7 @@ html,body{
   text-transform:uppercase;
 }
 
-.revisitHeader{
+  .revisitHeader{
   display:none;
   font-weight:600;
   margin-bottom:12px;
@@ -157,24 +159,30 @@ html,body{
   font-size:clamp(16px, 2.2vw, 26px);
 }
 
+
 /* ========================= */
 /* TABLET + LARGER SCREENS  */
 /* ========================= */
 
-@media (min-width:768px){
+@media (min-width: 768px){
+
   .viewport{
-    padding-top:60px;
+    padding-top:70px;
     padding-bottom:40px;
   }
 
-  }
+}
 
   @media (min-width: 768px){
 
   .card.center{
     transform:translateY(-20%);
   }
+
 }
+
+
+  
 </style>
 </head>
 
@@ -188,22 +196,40 @@ html,body{
 </div>
 
 <div class="revealPanel" id="revealPanel">
+
   <div class="revisitHeader" id="revisitHeader">
     This was your card for today
   </div>
+
+  <div class="label">Today’s Word</div>
+  <div class="word" id="revealWord"></div>
+
 </div>
+
 
 <script>
 
-/* ---------- CONFIG ---------- */
-const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
+/* ---------- SUPABASE IMAGE BASE ---------- */
+const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/DailyGuidanceCards/";
+
+/* ---------- CARD FILENAMES ---------- */
+const CARD_NAMES = [
+"PATIENCE","JOURNEY","PRESENT","EXTRAORDINARY","BEGINNING","NATURE",
+"CONNECTION","INTUITION","COMPASSION","ENERGY","RESILIENCE",
+"PERSONAL_POWER","IMAGINATION","STABILITY","REST","COMMUNITY",
+"CELEBRATION","LUCK","RECIPROCITY","RECEIVING","COMMUNICATION",
+"REFRAME","SOFTEN","SELF-WORTH","ABUNDANCE","BALANCE","FREEDOM",
+"EASE","AUTHENTICITY","FLOW","ACCEPTANCE","NOTICE","BOUNDARIES",
+"DETACHMENT","RENEWAL","GRATITUDE","LIMITLESS","COURAGE","JOY",
+"INNER_GUIDANCE","CREATIVITY","SURRENDER","RELEASE","LOVE"
+];
+
 const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
-const TOTAL_CARDS = 95; // change anytime
 
 /* ---------- BUILD IMAGE URLS ---------- */
-const IMAGES = Array.from({length: TOTAL_CARDS}, (_, i) => {
-  const number = String(i + 1).padStart(3, "0");
-  return BASE_URL + number + ".png";
+const IMAGES = CARD_NAMES.map((name, index) => {
+  const number = String(index + 1).padStart(2, "0");
+  return BASE_URL + `CARD-${number}_${name}.png`;
 });
 
 const track = document.getElementById('track');
@@ -213,11 +239,8 @@ const revealWord = document.getElementById('revealWord');
 
 /* ---------- CREATE CARDS ---------- */
 IMAGES.forEach((src, i)=>{
-  const number = String(i + 1).padStart(3,"0");
-
   const card = document.createElement('div');
   card.className = 'card';
-  card.dataset.number = number;
   card.dataset.src = src;
 
   const inner = document.createElement('div');
@@ -231,104 +254,157 @@ IMAGES.forEach((src, i)=>{
   front.className = 'face front';
   front.innerHTML = `<img data-src="${src}" />`;
 
+
   inner.appendChild(back);
   inner.appendChild(front);
   card.appendChild(inner);
   track.appendChild(card);
 });
 
-/* Duplicate deck */
-Array.from(track.children).forEach(card=>{
-  track.appendChild(card.cloneNode(true));
+  // Duplicate deck for seamless looping
+const originalCards = Array.from(track.children);
+
+originalCards.forEach(card => {
+  const clone = card.cloneNode(true);
+  track.appendChild(clone);
 });
 
 /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
   const scRect = scroller.getBoundingClientRect();
   const centerX = scRect.left + scRect.width/2;
-  let closest=null, dist=Infinity;
+  let closest=null, closestDist=Infinity;
 
   document.querySelectorAll('.card').forEach(c=>{
     c.classList.remove('center');
     const r = c.getBoundingClientRect();
     const cx = r.left + r.width/2;
-    const d = Math.abs(cx-centerX);
-    if(d<dist){dist=d;closest=c;}
+    const d = Math.abs(cx - centerX);
+    if(d < closestDist){ closestDist = d; closest = c; }
   });
+
   if(closest) closest.classList.add('center');
 }
 
-scroller.addEventListener('scroll',()=>{
-  const half = scroller.scrollWidth/2;
-  if(scroller.scrollLeft>=half) scroller.scrollLeft-=half;
-  if(scroller.scrollLeft<=0) scroller.scrollLeft+=half;
+scroller.addEventListener('scroll', () => {
+
+  const halfWidth = scroller.scrollWidth / 2;
+
+  // Loop forward
+  if (scroller.scrollLeft >= halfWidth) {
+    scroller.scrollLeft -= halfWidth;
+  }
+
+  // Loop backward
+  if (scroller.scrollLeft <= 0) {
+    scroller.scrollLeft += halfWidth;
+  }
+
   requestAnimationFrame(updateCenter);
 });
 
+
 /* ---------- SELECT CENTER CARD ---------- */
-scroller.addEventListener('click',()=>{
-  const center=document.querySelector('.card.center');
+scroller.addEventListener('click', ()=>{
+
+  const center = document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
-/* -------- LAZY LOAD FRONT IMAGE -------- */
-  const img=center.querySelector('.face.front img');
-  if(!img.src) img.src=img.dataset.src;
+  /* -------- LAZY LOAD FRONT IMAGE -------- */
+  const img = center.querySelector('.face.front img');
+  if(!img.src){
+    img.src = img.dataset.src;
+  }
 
   center.classList.add('selected','flipped');
 
   document.querySelectorAll('.card').forEach(c=>{
-    if(c!==center) c.classList.add('blur');
+    if(c !== center) c.classList.add('blur');
   });
 
-  revealPanel.style.display="flex";
-  document.getElementById('revisitHeader').style.display="none";
+  const keyword = extractKeyword(center.dataset.src);
+  revealWord.textContent = keyword;
+  revealPanel.style.display = "flex";
 
-/* -------- SAVE DAILY CARD -------- */
-  const today=new Date().toISOString().split('T')[0];
-  const index=Array.from(document.querySelectorAll('.card')).indexOf(center);
+  document.getElementById('revisitHeader').style.display = "none";
 
-  localStorage.setItem('dailyIamCard',JSON.stringify({
-    cardIndex:index,
-    date:today
+  /* -------- SAVE DAILY CARD -------- */
+  const today = new Date().toISOString().split('T')[0];
+
+  const index = Array.from(document.querySelectorAll('.card')).indexOf(center);
+
+  localStorage.setItem('dailyCard', JSON.stringify({
+    cardIndex: index,
+    date: today
   }));
+
 });
 
+
+/* ---------- EXTRACT WORD ---------- */
+function extractKeyword(url){
+  const file = url.split('/').pop().replace('.png','');
+  
+  // Remove "CARD-XX_" prefix safely
+  const namePart = file.replace(/^CARD-\d+_/, '');
+  
+  return namePart.replace(/_/g,' ');
+}
+
 /* ---------- INITIAL ---------- */
-window.addEventListener('load',()=>{
-  requestAnimationFrame(()=>{
-   const half = scroller.scrollWidth / 2;
-   scroller.scrollLeft = Math.random() * half;
+window.addEventListener('load', () => {
 
-    setTimeout(updateCenter,50);
+  requestAnimationFrame(() => {
 
-/* -------- CHECK FOR SAVED DAILY CARD -------- */
-    const saved=JSON.parse(localStorage.getItem('dailyIamCard'));
-    const today=new Date().toISOString().split('T')[0];
+    const halfWidth = scroller.scrollWidth / 2;
+    scroller.scrollLeft = halfWidth / 2;
 
-    if(saved && saved.date===today){
-      const cards=document.querySelectorAll('.card');
-      const savedCard=cards[saved.cardIndex];
+    setTimeout(updateCenter, 50);
+
+    /* -------- CHECK FOR SAVED DAILY CARD -------- */
+    const saved = JSON.parse(localStorage.getItem('dailyCard'));
+    const today = new Date().toISOString().split('T')[0];
+
+    if(saved && saved.date === today){
+
+      const cards = document.querySelectorAll('.card');
+      const savedCard = cards[saved.cardIndex];
+
       if(savedCard){
-        const img=savedCard.querySelector('.face.front img');
-        if(!img.src) img.src=img.dataset.src;
+
+        /* Lazy load */
+        const img = savedCard.querySelector('.face.front img');
+        if(!img.src){
+          img.src = img.dataset.src;
+        }
 
         savedCard.classList.add('selected','flipped');
 
-    // SCROLL DIRECTLY TO THAT CARD
-        savedCard.scrollIntoView({inline:"center",block:"nearest"});
-
-        cards.forEach(c=>{
-          if(c!==savedCard) c.classList.add('blur');
+        // SCROLL DIRECTLY TO THAT CARD
+        savedCard.scrollIntoView({
+          inline: "center",
+          block: "nearest"
         });
 
-        revealPanel.style.display="flex";
-        document.getElementById('revisitHeader').style.display="block";
+        cards.forEach(c=>{
+          if(c !== savedCard) c.classList.add('blur');
+        });
+
+        const keyword = extractKeyword(savedCard.dataset.src);
+        revealWord.textContent = keyword;
+        revealPanel.style.display = "flex";
+
+        document.getElementById('revisitHeader').style.display = "block";
       }
-    }else{
-      localStorage.removeItem('dailyIamCard');
+
+    } else {
+      localStorage.removeItem('dailyCard');
     }
-  });
-});
+
+  }); // <-- closes requestAnimationFrame
+
+}); // <-- closes window.addEventListener
+
 </script>
 </body>
 </html>
