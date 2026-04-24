@@ -342,35 +342,7 @@ scroller.addEventListener('click', ()=>{
   
 });
 
-function updateFanCurve(){
 
-  const scRect = scroller.getBoundingClientRect();
-  const centerX = scRect.left + scRect.width/2;
-
-  const maxDistance = scRect.width * 0.42; 
-  const maxDrop = Math.min(window.innerWidth * 0.08, 32);
-  // responsive drop amount
-
-  document.querySelectorAll('.card').forEach(card=>{
-
-    if(card.classList.contains('selected')) return;
-
-    const r = card.getBoundingClientRect();
-    const cx = r.left + r.width/2;
-
-    let dist = Math.abs(cx - centerX);
-
-    if(dist > maxDistance) dist = maxDistance;
-
-    // quadratic arc = gentle natural fan curve
-    const t = dist / maxDistance;
-    const y = (t*t) * maxDrop;
-
-    card.style.setProperty('--curveY', `${y}px`);
-
-  });
-}
-  
 
 /* ---------- EXTRACT WORD ---------- */
 function extractKeyword(url){
