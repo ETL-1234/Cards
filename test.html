@@ -295,6 +295,9 @@ function updateCenter(){
   });
 
   if(closest) closest.classList.add('center');
+  
+  updateFanCurve();
+  
 }
 
 scroller.addEventListener('scroll', () => {
@@ -348,7 +351,7 @@ scroller.addEventListener('click', ()=>{
     cardIndex: index,
     date: today
   }));
-
+  
 });
 
 function updateFanCurve(){
