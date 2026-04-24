@@ -307,19 +307,48 @@ originalCards.forEach(card => {
 
 /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
+
   const scRect = scroller.getBoundingClientRect();
   const centerX = scRect.left + scRect.width/2;
-  let closest=null, closestDist=Infinity;
 
-  document.querySelectorAll('.card').forEach(c=>{
-    c.classList.remove('center');
-    const r = c.getBoundingClientRect();
-    const cx = r.left + r.width/2;
-    const d = Math.abs(cx - centerX);
-    if(d < closestDist){ closestDist = d; closest = c; }
+  let closest=null;
+  let closestIndex=0;
+  let closestDist=Infinity;
+
+  const cards=[...document.querySelectorAll('.card')];
+
+  cards.forEach((c,i)=>{
+    c.classList.remove(
+      'center',
+      'left-1','left-2','left-3',
+      'right-1','right-2','right-3'
+    );
+
+    const r=c.getBoundingClientRect();
+    const cx=r.left + r.width/2;
+    const d=Math.abs(cx-centerX);
+
+    if(d<closestDist){
+      closestDist=d;
+      closest=c;
+      closestIndex=i;
+    }
   });
 
-  if(closest) closest.classList.add('center');
+  if(closest){
+
+    closest.classList.add('center');
+
+    if(cards[closestIndex-1]) cards[closestIndex-1].classList.add('left-1');
+    if(cards[closestIndex-2]) cards[closestIndex-2].classList.add('left-2');
+    if(cards[closestIndex-3]) cards[closestIndex-3].classList.add('left-3');
+
+    if(cards[closestIndex+1]) cards[closestIndex+1].classList.add('right-1');
+    if(cards[closestIndex+2]) cards[closestIndex+2].classList.add('right-2');
+    if(cards[closestIndex+3]) cards[closestIndex+3].classList.add('right-3');
+  }
+
+}
   
 }
 
