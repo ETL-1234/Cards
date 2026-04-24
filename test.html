@@ -332,8 +332,8 @@ function updateCenter(){
   cards.forEach((c,i)=>{
     c.classList.remove(
       'center',
-      'left-1','left-2','left-3',
-      'right-1','right-2','right-3'
+     'left-1','left-2','left-3','left-4','left-5',
+     'right-1','right-2','right-3','right-4','right-5'
     );
 
     const r=c.getBoundingClientRect();
@@ -351,13 +351,14 @@ function updateCenter(){
 
     closest.classList.add('center');
 
-    if(cards[closestIndex-1]) cards[closestIndex-1].classList.add('left-1');
-    if(cards[closestIndex-2]) cards[closestIndex-2].classList.add('left-2');
-    if(cards[closestIndex-3]) cards[closestIndex-3].classList.add('left-3');
-
-    if(cards[closestIndex+1]) cards[closestIndex+1].classList.add('right-1');
-    if(cards[closestIndex+2]) cards[closestIndex+2].classList.add('right-2');
-    if(cards[closestIndex+3]) cards[closestIndex+3].classList.add('right-3');
+    for(let i=1;i<=5;i++){
+ if(cards[closestIndex-i]){
+   cards[closestIndex-i].classList.add(`left-${i}`);
+ }
+ if(cards[closestIndex+i]){
+   cards[closestIndex+i].classList.add(`right-${i}`);
+ }
+}
   }
 
 }
