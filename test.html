@@ -76,7 +76,7 @@ html,body{
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
   margin-top:110px; 
   transform-origin:center;
-  transition:transform 300ms ease;
+  transition: transform 300ms ease;
   cursor:pointer;
   perspective:1200px;
 }
@@ -122,11 +122,21 @@ html,body{
 }
 
 .card.center{
-  transform:translateY(-33%);
-  }
+  transform:
+    translateY(calc(var(--curveY) - 33%));
+}
 
 .card.selected{
   transform:translateY(-18px) scale(1.12)!important;
+}
+
+  .card{
+  --curveY:0px;
+}
+
+.card:not(.selected){
+  transform:
+    translateY(var(--curveY));
 }
 
 .card.blur:not(.flipped){
