@@ -122,23 +122,14 @@ html,body{
 }
 
 .card.center{
-  transform:
-    translateY(calc(var(--curveY) - 33%));
+ transform:translateY(-33%);
 }
 
 .card.selected{
   transform:translateY(-18px) scale(1.12)!important;
 }
 
-  .card{
-  --curveY:0px;
-}
-
-.card:not(.selected){
-  transform:
-    translateY(var(--curveY));
-}
-
+  
 .card.blur:not(.flipped){
   opacity:0;
 }
@@ -186,8 +177,7 @@ html,body{
   @media (min-width: 768px){
 
  .card.center{
-  transform:
-    translateY(calc(var(--curveY) - 20%));
+ transform:translateY(-20%);
 }
 
 }
