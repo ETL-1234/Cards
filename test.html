@@ -416,9 +416,10 @@ window.addEventListener('load', () => {
 
   requestAnimationFrame(() => {
 
-   const cardWidth = track.querySelector('.card').offsetWidth;
-   scroller.scrollLeft = halfWidth / 2 - cardWidth / 2;
-
+   const halfWidth = scroller.scrollWidth / 2;
+  const cardWidth = track.querySelector('.card').offsetWidth;
+  scroller.scrollLeft = halfWidth / 2 - cardWidth / 2;
+   
     setTimeout(updateCenter, 50);
 
     /* -------- CHECK FOR SAVED DAILY CARD -------- */
