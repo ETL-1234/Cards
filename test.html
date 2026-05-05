@@ -326,7 +326,7 @@ const isCenter = offset === 0;
 const isSelected = card.classList.contains('selected');
 
 // final scale logic
-const scale = (isCenter || isSelected) ? 1 : fanScale;
+const scale = isSelected ? 1 : fanScale;
     
   card.style.opacity = 1;
   card.style.pointerEvents = "auto";
