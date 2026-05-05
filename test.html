@@ -293,7 +293,7 @@ function updateCenter(){
    let dist = cx - centerX;
    let abs = Math.abs(dist);
 
-     if(abs < closestDist - 4){
+   if(abs < closestDist){
       closestDist=abs;
       closest=card;
    }
