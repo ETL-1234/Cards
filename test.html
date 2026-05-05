@@ -416,8 +416,8 @@ window.addEventListener('load', () => {
 
   requestAnimationFrame(() => {
 
-    const halfWidth = scroller.scrollWidth / 2;
-    scroller.scrollLeft = halfWidth / 2;
+   const cardWidth = track.querySelector('.card').offsetWidth;
+   scroller.scrollLeft = halfWidth / 2 - cardWidth / 2;
 
     setTimeout(updateCenter, 50);
 
