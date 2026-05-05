@@ -75,8 +75,9 @@ html,body{
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
   margin-top:110px; 
-  transform-origin:center;
-  transition: transform 300ms ease;
+  transform-origin:center bottom;
+  transition: transform 180ms ease-out;
+  will-change: transform;
   cursor:pointer;
   perspective:1200px;
 }
@@ -128,28 +129,6 @@ html,body{
   
 .card.blur:not(.flipped){
   opacity:0;
-}
-
- /* every card has permanent gentle arc baseline */
-.card{
- --curveY:12px;
- --curveRot:0deg;
- --lift:0px;
-
- transform:
-   translateY(calc(var(--curveY) + var(--lift)))
-   rotate(var(--curveRot));
-
- transform-origin:center bottom;
-
- transition:
-   transition: transform 90ms linear;
-
- will-change:transform;
-}
-
-.card.center{
- --lift:-33%;
 }
 
 
@@ -321,19 +300,50 @@ function updateCenter(){
    const r=card.getBoundingClientRect();
    const cx=r.left + r.width/2;
 
+   let dist = cx - centerX;
+  let abs = Math.abs(dist);
+
      if(abs < closestDist - 4){
       closestDist=abs;
       closest=card;
    }
-
-   if(abs>maxDist) abs=maxDist;
-   
+  
    });
 
+const cards = [...document.querySelectorAll('.card')];
+const centerIndex = cards.indexOf(closest);
+
+cards.forEach((card, i) => {
+
+  let offset = i - centerIndex;
+
+  // only show 7 cards
+  if (offset < -3 || offset > 3) {
+    card.style.opacity = 0;
+    return;
+  }
+
+  const slot = SLOTS[offset + 3];
+
+  card.style.opacity = 1;
+
+  card.style.transform = `
+    translateY(${slot.y}px)
+    rotate(${slot.rot}deg)
+    scale(${slot.scale})
+  `;
+
+  card.style.zIndex = slot.z;
+
+});
+  
  if(closest){
    closest.classList.add('center');
  }
 
+
+
+  
 }
 scroller.addEventListener('scroll', () => {
 
