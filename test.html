@@ -314,7 +314,19 @@ const centerIndex = cards.indexOf(closest);
   }
 
   const slot = SLOTS[offset + 3];
-  const lift = offset === 0 ? -55 : 0; // center card lift
+const lift = offset === 0 ? -55 : 0; // center card stays EXACT
+
+// 👇 control fan size here
+const fanScale = 0.82;
+
+// center card must remain full size
+const isCenter = offset === 0;
+
+// selected card (flipped) must remain untouched
+const isSelected = card.classList.contains('selected');
+
+// final scale logic
+const scale = (isCenter || isSelected) ? 1 : fanScale;
     
   card.style.opacity = 1;
   card.style.pointerEvents = "auto";
