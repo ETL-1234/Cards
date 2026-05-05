@@ -41,7 +41,7 @@ html,body{
   height:auto;           
   min-height:0;
   padding-top:60px;
-  padding-bottom:60px;
+  padding-bottom:100px;
   padding-left:18px;
   padding-right:18px;
   overflow:visible;
@@ -62,7 +62,7 @@ html,body{
   display:flex;
   align-items:flex-end;   
   padding-top:40px;
-  padding-bottom:40px;      
+  padding-bottom:80px;      
   overflow:visible;
 }
 
@@ -75,7 +75,7 @@ html,body{
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
   margin-top:110px; 
   transform-origin:center;
-  transition:transform 300ms ease;
+  transition:transform 120ms ease;
   cursor:pointer;
   perspective:1200px;
 }
@@ -117,10 +117,6 @@ html,body{
 
 .face.front{
   transform:rotateY(180deg);
-}
-
-.card.center{
-  transform:translateY(-33%);
 }
 
 .card.selected{
@@ -168,13 +164,7 @@ html,body{
   }
 
   }
-
-  @media (min-width: 768px){
-
-  .card.center{
-    transform:translateY(-20%);
-  }
-}
+ 
 </style>
 </head>
 
@@ -197,6 +187,18 @@ html,body{
 
 /* ---------- CONFIG ---------- */
 const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
+
+  /* ---------- CARD LOCATION ---------- */
+const SLOTS = [
+  { x:-3, y:60, rot:-18, scale:1 },
+  { x:-2, y:40, rot:-12, scale:1 },
+  { x:-1, y:20, rot:-6,  scale:1 },
+  { x: 0, y:-40, rot:0,  scale:1 }, // center SAME SIZE
+  { x: 1, y:20, rot:6,   scale:1 },
+  { x: 2, y:40, rot:12,  scale:1 },
+  { x: 3, y:60, rot:18,  scale:1 }
+];
+  
 const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
 const TOTAL_CARDS = 95; // change anytime
 
@@ -210,6 +212,8 @@ const track = document.getElementById('track');
 const scroller = document.getElementById('scroller');
 const revealPanel = document.getElementById('revealPanel');
 const revealWord = document.getElementById('revealWord');
+
+
 
 /* ---------- CREATE CARDS ---------- */
 IMAGES.forEach((src, i)=>{
@@ -242,28 +246,117 @@ Array.from(track.children).forEach(card=>{
   track.appendChild(card.cloneNode(true));
 });
 
-/* ---------- CENTER DETECTION ---------- */
+  /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
-  const scRect = scroller.getBoundingClientRect();
-  const centerX = scRect.left + scRect.width/2;
-  let closest=null, dist=Infinity;
 
-  document.querySelectorAll('.card').forEach(c=>{
-    c.classList.remove('center');
-    const r = c.getBoundingClientRect();
-    const cx = r.left + r.width/2;
-    const d = Math.abs(cx-centerX);
-    if(d<dist){dist=d;closest=c;}
-  });
-  if(closest) closest.classList.add('center');
+ const cards=[...document.querySelectorAll('.card')];
+
+ const scRect=scroller.getBoundingClientRect();
+ const centerX = scRect.left + scRect.width / 2;
+
+ let closest=null;
+ let closestDist=Infinity;
+
+  cards.forEach(card=>{
+
+   card.classList.remove('center');
+
+   const r=card.getBoundingClientRect();
+   const cx=r.left + r.width/2;
+
+   let dist = cx - centerX;
+   let abs = Math.abs(dist);
+
+   if(abs < closestDist){
+      closestDist=abs;
+      closest=card;
+   }
+  
+   });
+
+  if (!closest) return;
+const centerIndex = cards.indexOf(closest);
+
+  cards.forEach((card, i) => {
+
+  let offset = i - centerIndex;
+
+    /* only show 7 cards */
+  if (offset < -3 || offset > 3) {
+    card.style.opacity = 0;
+    card.style.pointerEvents = "none";
+    return;
+  }
+
+  const slot = SLOTS[offset + 3];
+const lift = offset === 0 ? -55 : 0; // center card stays EXACT
+
+// 👇 control fan size here
+const fanScale = 0.82;
+
+// center card must remain full size
+const isCenter = offset === 0;
+
+// selected card (flipped) must remain untouched
+const isSelected = card.classList.contains('selected');
+
+// final scale logic
+const scale = isSelected ? 1 : fanScale;
+    
+  // if card should be hidden (after selection), don't override it
+if (card.classList.contains('blur')) {
+  card.style.opacity = 0;
+  card.style.pointerEvents = "none";
+  return;
 }
 
-scroller.addEventListener('scroll',()=>{
-  const half = scroller.scrollWidth/2;
-  if(scroller.scrollLeft>=half) scroller.scrollLeft-=half;
-  if(scroller.scrollLeft<=0) scroller.scrollLeft+=half;
-  requestAnimationFrame(updateCenter);
+// otherwise behave normally
+card.style.opacity = 1;
+card.style.pointerEvents = "auto";
+
+card.style.transform = `
+  translateX(${offset * -14}px)
+  translateY(${slot.y + lift}px)
+  rotate(${slot.rot}deg)
+  scale(${scale})
+`;
+
+ card.style.zIndex = 100 - offset;
+
 });
+
+  
+   closest.classList.add('center');
+ }
+
+/* ---------- SCROLLER ---------- */
+let ticking = false;
+
+scroller.addEventListener('scroll', () => {
+
+  if (!ticking) {
+    requestAnimationFrame(() => {
+
+      const halfWidth = scroller.scrollWidth / 2;
+
+      if (scroller.scrollLeft >= halfWidth) {
+        scroller.scrollLeft -= halfWidth;
+      }
+
+      if (scroller.scrollLeft <= 0) {
+        scroller.scrollLeft += halfWidth;
+      }
+
+      updateCenter();
+      ticking = false;
+
+    });
+
+    ticking = true;
+  }
+
+});
+
 
 /* ---------- SELECT CENTER CARD ---------- */
 scroller.addEventListener('click',()=>{
@@ -294,12 +387,21 @@ scroller.addEventListener('click',()=>{
 });
 
 /* ---------- INITIAL ---------- */
-window.addEventListener('load',()=>{
-  requestAnimationFrame(()=>{
-   const half = scroller.scrollWidth / 2;
-   scroller.scrollLeft = Math.random() * half;
+window.addEventListener('load', () => {
 
-    setTimeout(updateCenter,50);
+  requestAnimationFrame(() => {
+
+   const cards = track.querySelectorAll('.card');
+const middleCard = cards[Math.floor(cards.length / 2)];
+
+const scrollerRect = scroller.getBoundingClientRect();
+const cardRect = middleCard.getBoundingClientRect();
+
+const offset = (cardRect.left + cardRect.width / 2) - (scrollerRect.left + scrollerRect.width / 2);
+
+scroller.scrollLeft += offset;
+   
+    setTimeout(updateCenter, 50);
 
 /* -------- CHECK FOR SAVED DAILY CARD -------- */
     const saved=JSON.parse(localStorage.getItem('dailyIamCard'));
