@@ -319,11 +319,12 @@ const centerIndex = cards.indexOf(closest);
   card.style.opacity = 1;
   card.style.pointerEvents = "auto";
 
-  card.style.transform = `
-    translateY(${slot.y}px)
-    rotate(${slot.rot}deg)
-    scale(${slot.scale})
-  `;
+ card.style.transform = `
+  translateX(${offset * -14}px)
+  translateY(${slot.y}px)
+  rotate(${slot.rot}deg)
+  scale(${slot.scale})
+`;
 
   card.style.zIndex = 100 - Math.abs(offset) * 10 + (offset > 0 ? 5 : 0);
 
