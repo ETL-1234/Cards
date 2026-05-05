@@ -316,10 +316,8 @@ const centerIndex = cards.indexOf(closest);
 const fanScale = 0.88;
 
 // center lift (we'll increase this in step 3)
-const lift =
-  offset === 0
-    ? -55   // base fan center lift
-    : 0;
+const slot = SLOTS[offset + 3];
+  const lift = offset === 0 ? -55 : 0; // center card lift
 
 const selectedLift = card.classList.contains('selected') ? -18 : 0;
 
