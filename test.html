@@ -328,8 +328,16 @@ const isSelected = card.classList.contains('selected');
 // final scale logic
 const scale = isSelected ? 1 : fanScale;
     
-  card.style.opacity = 1;
-  card.style.pointerEvents = "auto";
+  // if card should be hidden (after selection), don't override it
+if (card.classList.contains('blur')) {
+  card.style.opacity = 0;
+  card.style.pointerEvents = "none";
+  return;
+}
+
+// otherwise behave normally
+card.style.opacity = 1;
+card.style.pointerEvents = "auto";
 
 card.style.transform = `
   translateX(${offset * -14}px)
