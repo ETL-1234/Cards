@@ -333,22 +333,32 @@ const centerIndex = cards.indexOf(closest);
    closest.classList.add('center');
  }
 
+/* ---------- SCROLLER ---------- */
+let ticking = false;
 
 scroller.addEventListener('scroll', () => {
 
-  const halfWidth = scroller.scrollWidth / 2;
+  if (!ticking) {
+    requestAnimationFrame(() => {
 
-  // Loop forward
-  if (scroller.scrollLeft >= halfWidth) {
-    scroller.scrollLeft -= halfWidth;
+      const halfWidth = scroller.scrollWidth / 2;
+
+      if (scroller.scrollLeft >= halfWidth) {
+        scroller.scrollLeft -= halfWidth;
+      }
+
+      if (scroller.scrollLeft <= 0) {
+        scroller.scrollLeft += halfWidth;
+      }
+
+      updateCenter();
+      ticking = false;
+
+    });
+
+    ticking = true;
   }
 
-  // Loop backward
-  if (scroller.scrollLeft <= 0) {
-    scroller.scrollLeft += halfWidth;
-  }
-
-  requestAnimationFrame(updateCenter);
 });
 
 
