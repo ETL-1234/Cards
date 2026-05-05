@@ -417,9 +417,15 @@ window.addEventListener('load', () => {
 
   requestAnimationFrame(() => {
 
-   const halfWidth = scroller.scrollWidth / 2;
-  const cardWidth = track.querySelector('.card').offsetWidth;
-  scroller.scrollLeft = halfWidth / 2 - cardWidth / 2;
+   const cards = track.querySelectorAll('.card');
+const middleCard = cards[Math.floor(cards.length / 2)];
+
+const scrollerRect = scroller.getBoundingClientRect();
+const cardRect = middleCard.getBoundingClientRect();
+
+const offset = (cardRect.left + cardRect.width / 2) - (scrollerRect.left + scrollerRect.width / 2);
+
+scroller.scrollLeft += offset;
    
     setTimeout(updateCenter, 50);
 
