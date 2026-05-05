@@ -336,11 +336,7 @@ card.style.transform = `
   scale(${scale})
 `;
 
-card.style.zIndex =
-  card.classList.contains('selected')
-    ? 999
-    : 100 - Math.abs(offset);
-
+ccard.style.zIndex = 100 - Math.abs(offset);
 });
 
   
