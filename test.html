@@ -291,9 +291,7 @@ function updateCenter(){
  let closest=null;
  let closestDist=Infinity;
 
- const maxDist=scRect.width*0.42;
-
- cards.forEach(card=>{
+  cards.forEach(card=>{
 
    card.classList.remove('center');
 
@@ -301,7 +299,7 @@ function updateCenter(){
    const cx=r.left + r.width/2;
 
    let dist = cx - centerX;
-  let abs = Math.abs(dist);
+   let abs = Math.abs(dist);
 
      if(abs < closestDist - 4){
       closestDist=abs;
@@ -310,9 +308,10 @@ function updateCenter(){
   
    });
 
-const cards = [...document.querySelectorAll('.card')];
+  if (!closest) return;
 const centerIndex = cards.indexOf(closest);
 
+  
 cards.forEach((card, i) => {
 
   let offset = i - centerIndex;
@@ -337,7 +336,6 @@ cards.forEach((card, i) => {
 
 });
   
- if(closest){
    closest.classList.add('center');
  }
 
