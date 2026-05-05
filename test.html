@@ -278,7 +278,7 @@ function updateCenter(){
  const cards=[...document.querySelectorAll('.card')];
 
  const scRect=scroller.getBoundingClientRect();
- const centerX=scRect.left + scRect.width/2;
+ const centerX = scRect.left + scRect.width / 2 + 10;
 
  let closest=null;
  let closestDist=Infinity;
