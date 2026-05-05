@@ -232,6 +232,18 @@ html,body{
 /* ---------- SUPABASE IMAGE BASE ---------- */
 const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/DailyGuidanceCards/";
 
+/* ---------- CARD LOCATION ---------- */
+const SLOTS = [
+  { x:-3, y:60, rot:-18, scale:0.85, z:1 },
+  { x:-2, y:40, rot:-12, scale:0.9,  z:2 },
+  { x:-1, y:20, rot:-6,  scale:0.95, z:3 },
+  { x: 0, y:-40,rot:0,   scale:1.1,  z:5 }, // CENTER
+  { x: 1, y:20, rot:6,   scale:0.95, z:3 },
+  { x: 2, y:40, rot:12,  scale:0.9,  z:2 },
+  { x: 3, y:60, rot:18,  scale:0.85, z:1 }
+];
+
+  
 /* ---------- CARD FILENAMES ---------- */
 const CARD_NAMES = [
 "PATIENCE","JOURNEY","PRESENT","EXTRAORDINARY","BEGINNING","NATURE",
@@ -309,28 +321,14 @@ function updateCenter(){
    const r=card.getBoundingClientRect();
    const cx=r.left + r.width/2;
 
-   let dist=cx-centerX;
-   let abs=Math.abs(dist);
-
-  if(abs < closestDist - 4){
+     if(abs < closestDist - 4){
       closestDist=abs;
       closest=card;
    }
 
    if(abs>maxDist) abs=maxDist;
-
-   let t=abs/maxDist;
-
-   /* smooth parabola */
-   let y=8 + (t*t*36);
-
-   /* smooth fan rotation */
-   let rot=(dist/maxDist)*10;
-
-   card.style.setProperty('--curveY',`${y}px`);
-   card.style.setProperty('--curveRot',`${rot}deg`);
-
- });
+   
+   });
 
  if(closest){
    closest.classList.add('center');
