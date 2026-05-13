@@ -249,6 +249,12 @@ Array.from(track.children).forEach(card=>{
   /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
 
+    // Once a card has been selected and flipped,
+  // stop updating the carousel layout.
+  if (document.querySelector('.card.selected')) {
+    return;
+  }
+
  const cards=[...document.querySelectorAll('.card')];
 
  const scRect=scroller.getBoundingClientRect();
@@ -303,15 +309,16 @@ const isSelected = card.classList.contains('selected');
 // final scale logic
 const scale = isSelected ? 1 : fanScale;
     
-  // if card should be hidden (after selection), don't override it
+ // if card should be hidden after a card is selected,
+// leave it fully transparent and skip all further styling
 if (card.classList.contains('blur')) {
-  card.style.opacity = 0;
+  card.style.opacity = "0";
   card.style.pointerEvents = "none";
   return;
 }
 
-// otherwise behave normally
-card.style.opacity = 1;
+// normal visible cards
+card.style.opacity = "1";
 card.style.pointerEvents = "auto";
 
 card.style.transform = `
