@@ -396,6 +396,8 @@ scroller.addEventListener('click', ()=>{
   }
 
   center.classList.add('selected','flipped');
+  scroller.style.overflowX = "hidden";
+  scroller.style.touchAction = "pan-y";
 
  document.querySelectorAll('.card').forEach(c => {
   if (c !== center) {
