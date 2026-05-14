@@ -376,6 +376,10 @@ scroller.addEventListener('click',()=>{
 
   center.classList.add('selected','flipped');
 
+// Lock the selected card in place
+scroller.style.overflowX = "hidden";
+scroller.style.touchAction = "none";
+
   document.querySelectorAll('.card').forEach(c => {
   if (c !== center) {
     c.classList.add('blur');
