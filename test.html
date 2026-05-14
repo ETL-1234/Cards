@@ -397,9 +397,13 @@ scroller.addEventListener('click', ()=>{
 
   center.classList.add('selected','flipped');
 
-  document.querySelectorAll('.card').forEach(c=>{
-    if(c !== center) c.classList.add('blur');
-  });
+ document.querySelectorAll('.card').forEach(c => {
+  if (c !== center) {
+    c.classList.add('blur');
+    c.style.opacity = "0";
+    c.style.pointerEvents = "none";
+  }
+});
 
   const keyword = extractKeyword(center.dataset.src);
   revealWord.textContent = keyword;
