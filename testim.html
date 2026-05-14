@@ -431,6 +431,10 @@ scroller.scrollLeft += offset;
 
         savedCard.classList.add('selected','flipped');
 
+// Lock the selected card in place
+scroller.style.overflowX = "hidden";
+scroller.style.touchAction = "none";
+
     // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({inline:"center",block:"nearest"});
 
