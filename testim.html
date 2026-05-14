@@ -433,7 +433,7 @@ scroller.scrollLeft += offset;
 
 // Lock the selected card in place
 scroller.style.overflowX = "hidden";
-scroller.style.touchAction = "none";
+scroller.style.touchAction = "pan-y";
 
     // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({inline:"center",block:"nearest"});
