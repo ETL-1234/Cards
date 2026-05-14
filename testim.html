@@ -378,7 +378,7 @@ scroller.addEventListener('click',()=>{
 
 // Lock the selected card in place
 scroller.style.overflowX = "hidden";
-scroller.style.touchAction = "none";
+scroller.style.touchAction = "pan-y";
 
   document.querySelectorAll('.card').forEach(c => {
   if (c !== center) {
