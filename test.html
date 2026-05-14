@@ -477,9 +477,13 @@ scroller.scrollLeft += offset;
           block: "nearest"
         });
 
-        cards.forEach(c=>{
-          if(c !== savedCard) c.classList.add('blur');
-        });
+        cards.forEach(c => {
+  if (c !== savedCard) {
+    c.classList.add('blur');
+    c.style.opacity = "0";
+    c.style.pointerEvents = "none";
+  }
+});
 
         const keyword = extractKeyword(savedCard.dataset.src);
         revealWord.textContent = keyword;
