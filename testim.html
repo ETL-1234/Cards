@@ -376,9 +376,13 @@ scroller.addEventListener('click',()=>{
 
   center.classList.add('selected','flipped');
 
-  document.querySelectorAll('.card').forEach(c=>{
-    if(c!==center) c.classList.add('blur');
-  });
+  document.querySelectorAll('.card').forEach(c => {
+  if (c !== center) {
+    c.classList.add('blur');
+    c.style.opacity = "0";
+    c.style.pointerEvents = "none";
+  }
+});
 
   revealPanel.style.display="flex";
   document.getElementById('revisitHeader').style.display="none";
@@ -426,9 +430,13 @@ scroller.scrollLeft += offset;
     // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({inline:"center",block:"nearest"});
 
-        cards.forEach(c=>{
-          if(c!==savedCard) c.classList.add('blur');
-        });
+       cards.forEach(c => {
+  if (c !== savedCard) {
+    c.classList.add('blur');
+    c.style.opacity = "0";
+    c.style.pointerEvents = "none";
+  }
+});
 
         revealPanel.style.display="flex";
         document.getElementById('revisitHeader').style.display="block";
