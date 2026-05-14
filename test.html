@@ -472,6 +472,8 @@ scroller.scrollLeft += offset;
         }
 
         savedCard.classList.add('selected','flipped');
+        scroller.style.overflowX = "hidden";
+        scroller.style.touchAction = "pan-y";
 
         // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({
