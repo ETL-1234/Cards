@@ -41,7 +41,7 @@ html,body{
   align-items:flex-end;   
   height:auto;           
   min-height:0;
-  padding-top:60px;
+  padding-top:10px;
   padding-bottom:100px;
   padding-left:18px;
   padding-right:18px;
@@ -135,9 +135,11 @@ html,body{
   display: none;
   flex-direction: column;
   align-items: center;
-  margin-top: clamp(20px, 5vw, 40px); 
-  margin-bottom: 20px;
+  margin-top: clamp(24px, 6vw, 60px);
+  margin-bottom: clamp(20px, 4vw, 40px);
   text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
 
@@ -169,7 +171,7 @@ html,body{
 @media (min-width: 768px){
 
   .viewport{
-    padding-top:70px;
+    padding-top:20px;
     padding-bottom:40px;
   }
 
