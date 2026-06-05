@@ -405,6 +405,11 @@ scroller.addEventListener('click', ()=>{
   }
 
   center.classList.add('selected','flipped');
+  center.scrollIntoView({
+  inline: "center",
+  block: "nearest"
+});
+  
   scroller.style.overflowX = "hidden";
   scroller.style.touchAction = "pan-y";
 
