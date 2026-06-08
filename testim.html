@@ -357,6 +357,8 @@ card.style.transform = `
 /* ---------- SCROLLER ---------- */
 let ticking = false;
 
+let snapTimeout;
+
 scroller.addEventListener('scroll', () => {
 
   if (!ticking) {
@@ -379,6 +381,12 @@ scroller.addEventListener('scroll', () => {
 
     ticking = true;
   }
+
+clearTimeout(snapTimeout);
+
+  snapTimeout = setTimeout(() => {
+    snapCenterCard();
+  }, 120);
 
 });
 
