@@ -384,6 +384,10 @@ scroller.addEventListener('click',()=>{
   if(!img.src) img.src=img.dataset.src;
 
   center.classList.add('selected','flipped');
+    center.scrollIntoView({
+  inline: "center",
+  block: "nearest"
+});
 
 // Lock the selected card in place
 scroller.style.overflowX = "hidden";
