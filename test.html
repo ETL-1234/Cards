@@ -304,6 +304,12 @@ originalCards.forEach(card => {
 /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
 
+   // Once a card has been selected and flipped,
+  // stop updating the carousel layout.
+  if (document.querySelector('.card.selected')) {
+    return;
+  }
+
  const cards=[...document.querySelectorAll('.card')];
 
  const scRect=scroller.getBoundingClientRect();
