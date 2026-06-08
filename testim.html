@@ -124,14 +124,7 @@ html,body{
   transform:translateY(20px) scale(1.12)!important;
 }
 
-  @media (min-width:768px){
-
-  .card.selected{
-    transform:translateY(55px) scale(1.12)!important;
-  }
-
-}
-
+ 
 .card.blur:not(.flipped){
   opacity:0;
 }
@@ -174,6 +167,7 @@ html,body{
 /* ========================= */
 
 @media (min-width:768px){
+  
   .viewport{
     padding-top:40px;
     padding-bottom:40px;
@@ -182,8 +176,11 @@ html,body{
   .revisitHeader{
     font-size:32px;
   }
-  
+
+   .card.selected{
+    transform:translateY(55px) scale(1.12)!important;
   }
+}
  
 </style>
 </head>
