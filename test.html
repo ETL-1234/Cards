@@ -372,6 +372,26 @@ card.style.transform = `
    closest.classList.add('center');
  }
 
+  function snapCenterCard() {
+
+  const centerCard = document.querySelector('.card.center');
+  if (!centerCard) return;
+
+  const scrollerRect = scroller.getBoundingClientRect();
+  const cardRect = centerCard.getBoundingClientRect();
+
+  const cardCenter =
+    cardRect.left + cardRect.width / 2;
+
+  const viewportCenter =
+    scrollerRect.left + scrollerRect.width / 2;
+
+  const diff = cardCenter - viewportCenter;
+
+  scroller.scrollLeft += diff;
+}
+
+  
 /* ---------- SCROLLER ---------- */
 let ticking = false;
 let snapTimeout;
