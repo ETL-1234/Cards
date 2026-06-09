@@ -76,7 +76,7 @@ html,body{
   position:relative;
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
-  margin-top:30px; 
+  margin-top:50px; 
   transform-origin:center bottom;
   transition: transform 120ms linear;
   will-change: transform;
@@ -140,7 +140,7 @@ html,body{
   align-items: center;
   width:100%;
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   text-align: center;
   position: relative;
   z-index:20;
@@ -180,6 +180,10 @@ html,body{
     padding-bottom:40px;
   }
 
+  .card{
+    margin-top:90px; /* tablet */
+  }
+  
   .card.selected{
     transform:translateY(55px) scale(1.12)!important;
   }
