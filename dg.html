@@ -16,7 +16,8 @@
 html,body{
   height:100%;
   margin:0;
-  overflow:hidden;   /* prevents outer scroll */
+  overflow-x:hidden;
+  overflow-y:visible;
   font-family:"Inter",Inter,Arial,sans-serif;
   background:var(--bg);
 }
@@ -30,30 +31,31 @@ html,body{
   display:flex;
   flex-direction:column;
   align-items:center;
-  overflow:hidden;
+  overflow:visible;
 }
 
 .viewport{
   width:100%;
   position:relative;
+  z-index:1; 
   display:flex;
   justify-content:center;
   align-items:flex-end;   
   height:auto;           
   min-height:0;
   padding-top:60px;
-  padding-bottom:60px;
+  padding-bottom:100px;
   padding-left:18px;
   padding-right:18px;
   overflow:visible;
   }
-
+  
 .scroller{
   display:flex;
   width:100%;
   overflow-x:auto;
   overflow-y:visible;
-  scroll-snap-type:x mandatory;
+  scroll-snap-type:none;
   -webkit-overflow-scrolling:touch;
   scrollbar-width:none;
 }
@@ -63,7 +65,7 @@ html,body{
   display:flex;
   align-items:flex-end;   
   padding-top:40px;
-  padding-bottom:40px;      
+  padding-bottom:80px;   
   overflow:visible;
 }
 
@@ -75,8 +77,9 @@ html,body{
   scroll-snap-align:center;
   margin-right:calc(var(--card-w) * -1 * var(--overlap-factor));
   margin-top:110px; 
-  transform-origin:center;
-  transition:transform 300ms ease;
+  transform-origin:center bottom;
+  transition: transform 120ms linear;
+  will-change: transform;
   cursor:pointer;
   perspective:1200px;
 }
@@ -121,45 +124,51 @@ html,body{
   transform:rotateY(180deg);
 }
 
-.card.center{
-  transform:translateY(-33%);
-  }
-
-.card.selected{
-  transform:translateY(-18px) scale(1.12)!important;
+    .card.selected{
+  transform:translateY(70px) scale(1.12)!important;
 }
 
+ 
 .card.blur:not(.flipped){
   opacity:0;
 }
 
-.revealPanel{
-  margin-top:-30px;
-  display:none;
-  flex-direction:column;
-  align-items:center;
-}
 
+.revealPanel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width:100%;
+  margin-top: clamp(24px, 6vw, 60px);
+  margin-bottom: clamp(40px, 8vh, 100px);
+  text-align: center;
+  position: relative;
+  z-index:20;
+  }
+
+
+  
 .revealPanel .label{
   font-size:clamp(18px, 2.2vw, 28px);
-  font-weight:600;
+  font-weight:400;
 }
 
 .revealPanel .word{
   font-size:clamp(22px, 3vw, 38px);
-  font-weight:800;
+  font-weight:600;
   text-transform:uppercase;
 }
 
   .revisitHeader{
   display:none;
-  font-weight:600;
+  font-weight:400;
   margin-bottom:12px;
   text-align:center;
-  font-size:clamp(16px, 2.2vw, 26px);
+  font-size:clamp(18px, 2.5vw, 34px);
 }
 
 
+  
 /* ========================= */
 /* TABLET + LARGER SCREENS  */
 /* ========================= */
@@ -167,21 +176,29 @@ html,body{
 @media (min-width: 768px){
 
   .viewport{
-    padding-top:70px;
+    padding-top:40px;
     padding-bottom:40px;
   }
 
-}
-
-  @media (min-width: 768px){
-
-  .card.center{
-    transform:translateY(-20%);
+  .card.selected{
+    transform:translateY(55px) scale(1.12)!important;
   }
 
+  .revisitHeader{
+    font-size:26px;
+  }
+
+  .revealPanel .label{
+   font-size:22px;
 }
 
+.revealPanel .word{
+  font-size:26px;
+}
+  
+}
 
+ 
   
 </style>
 </head>
@@ -189,29 +206,44 @@ html,body{
 <body>
 <div class="app">
 
-<div class="viewport">
-  <div class="scroller" id="scroller">
-    <div class="track" id="track"></div>
+  <!-- Hidden text panel shown after a card is selected -->
+  <div class="revealPanel" id="revealPanel">
+
+    <div class="revisitHeader" id="revisitHeader">
+      This was your card for today
+    </div>
+
+    <div class="label" style="display:none;">Today’s word</div>
+    <div class="word" id="revealWord"></div>
+
   </div>
-</div>
 
-<div class="revealPanel" id="revealPanel">
-
-  <div class="revisitHeader" id="revisitHeader">
-    This was your card for today
+  <!-- Card carousel -->
+  <div class="viewport">
+    <div class="scroller" id="scroller">
+      <div class="track" id="track"></div>
+    </div>
   </div>
 
-  <div class="label">Today’s Word</div>
-  <div class="word" id="revealWord"></div>
-
 </div>
-
 
 <script>
 
 /* ---------- SUPABASE IMAGE BASE ---------- */
 const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/DailyGuidanceCards/";
 
+/* ---------- CARD LOCATION ---------- */
+const SLOTS = [
+  { x:-3, y:60, rot:-18, scale:1 },
+  { x:-2, y:40, rot:-12, scale:1 },
+  { x:-1, y:20, rot:-6,  scale:1 },
+  { x: 0, y:-40, rot:0,  scale:1 }, // center SAME SIZE
+  { x: 1, y:20, rot:6,   scale:1 },
+  { x: 2, y:40, rot:12,  scale:1 },
+  { x: 3, y:60, rot:18,  scale:1 }
+];
+
+  
 /* ---------- CARD FILENAMES ---------- */
 const CARD_NAMES = [
 "PATIENCE","JOURNEY","PRESENT","EXTRAORDINARY","BEGINNING","NATURE",
@@ -271,36 +303,146 @@ originalCards.forEach(card => {
 
 /* ---------- CENTER DETECTION ---------- */
 function updateCenter(){
-  const scRect = scroller.getBoundingClientRect();
-  const centerX = scRect.left + scRect.width/2;
-  let closest=null, closestDist=Infinity;
 
-  document.querySelectorAll('.card').forEach(c=>{
-    c.classList.remove('center');
-    const r = c.getBoundingClientRect();
-    const cx = r.left + r.width/2;
-    const d = Math.abs(cx - centerX);
-    if(d < closestDist){ closestDist = d; closest = c; }
-  });
+   // Once a card has been selected and flipped,
+  // stop updating the carousel layout.
+  if (document.querySelector('.card.selected')) {
+    return;
+  }
 
-  if(closest) closest.classList.add('center');
+ const cards=[...document.querySelectorAll('.card')];
+
+ const scRect=scroller.getBoundingClientRect();
+ const centerX = scRect.left + scRect.width / 2;
+
+ let closest=null;
+ let closestDist=Infinity;
+
+  cards.forEach(card=>{
+
+   card.classList.remove('center');
+
+   const r=card.getBoundingClientRect();
+   const cx=r.left + r.width/2;
+
+   let dist = cx - centerX;
+   let abs = Math.abs(dist);
+
+   if(abs < closestDist){
+      closestDist=abs;
+      closest=card;
+   }
+  
+   });
+
+  if (!closest) return;
+const centerIndex = cards.indexOf(closest);
+
+  cards.forEach((card, i) => {
+
+  let offset = i - centerIndex;
+
+    /* only show 7 cards */
+  if (offset < -3 || offset > 3) {
+    card.style.opacity = 0;
+    card.style.pointerEvents = "none";
+    return;
+  }
+
+  const slot = SLOTS[offset + 3];
+const lift = offset === 0 ? -55 : 0; // center card stays EXACT
+
+// 👇 control fan size here
+const fanScale = 0.82;
+
+// center card must remain full size
+const isCenter = offset === 0;
+
+// selected card (flipped) must remain untouched
+const isSelected = card.classList.contains('selected');
+
+// final scale logic
+const scale = isSelected ? 1 : fanScale;
+    
+  // if card should be hidden (after selection), don't override it
+if (card.classList.contains('blur')) {
+  card.style.opacity = 0;
+  card.style.pointerEvents = "none";
+  return;
 }
+
+// otherwise behave normally
+card.style.opacity = 1;
+card.style.pointerEvents = "auto";
+
+card.style.transform = `
+  translateX(${offset * -14}px)
+  translateY(${slot.y + lift}px)
+  rotate(${slot.rot}deg)
+  scale(${scale})
+`;
+
+ card.style.zIndex = 100 - offset;
+
+});
+
+  
+   closest.classList.add('center');
+ }
+
+  function snapCenterCard() {
+
+  const centerCard = document.querySelector('.card.center');
+  if (!centerCard) return;
+
+  const scrollerRect = scroller.getBoundingClientRect();
+  const cardRect = centerCard.getBoundingClientRect();
+
+  const cardCenter =
+    cardRect.left + cardRect.width / 2;
+
+  const viewportCenter =
+    scrollerRect.left + scrollerRect.width / 2;
+
+  const diff = cardCenter - viewportCenter;
+
+  scroller.scrollLeft += diff;
+}
+
+  
+/* ---------- SCROLLER ---------- */
+let ticking = false;
+let snapTimeout;
 
 scroller.addEventListener('scroll', () => {
 
-  const halfWidth = scroller.scrollWidth / 2;
+  if (!ticking) {
+    requestAnimationFrame(() => {
 
-  // Loop forward
-  if (scroller.scrollLeft >= halfWidth) {
-    scroller.scrollLeft -= halfWidth;
+      const halfWidth = scroller.scrollWidth / 2;
+
+      if (scroller.scrollLeft >= halfWidth) {
+        scroller.scrollLeft -= halfWidth;
+      }
+
+      if (scroller.scrollLeft <= 0) {
+        scroller.scrollLeft += halfWidth;
+      }
+
+      updateCenter();
+      ticking = false;
+
+    });
+
+    ticking = true;
   }
 
-  // Loop backward
-  if (scroller.scrollLeft <= 0) {
-    scroller.scrollLeft += halfWidth;
-  }
+clearTimeout(snapTimeout);
 
-  requestAnimationFrame(updateCenter);
+  snapTimeout = setTimeout(() => {
+    snapCenterCard();
+  }, 120);
+
 });
 
 
@@ -317,10 +459,21 @@ scroller.addEventListener('click', ()=>{
   }
 
   center.classList.add('selected','flipped');
+  center.scrollIntoView({
+  inline: "center",
+  block: "nearest"
+});
+  
+  scroller.style.overflowX = "hidden";
+  scroller.style.touchAction = "pan-y";
 
-  document.querySelectorAll('.card').forEach(c=>{
-    if(c !== center) c.classList.add('blur');
-  });
+ document.querySelectorAll('.card').forEach(c => {
+  if (c !== center) {
+    c.classList.add('blur');
+    c.style.opacity = "0";
+    c.style.pointerEvents = "none";
+  }
+});
 
   const keyword = extractKeyword(center.dataset.src);
   revealWord.textContent = keyword;
@@ -337,8 +490,9 @@ scroller.addEventListener('click', ()=>{
     cardIndex: index,
     date: today
   }));
-
+  
 });
+
 
 
 /* ---------- EXTRACT WORD ---------- */
@@ -356,9 +510,16 @@ window.addEventListener('load', () => {
 
   requestAnimationFrame(() => {
 
-    const halfWidth = scroller.scrollWidth / 2;
-    scroller.scrollLeft = halfWidth / 2;
+   const cards = track.querySelectorAll('.card');
+const middleCard = cards[Math.floor(cards.length / 2)];
 
+const scrollerRect = scroller.getBoundingClientRect();
+const cardRect = middleCard.getBoundingClientRect();
+
+const offset = (cardRect.left + cardRect.width / 2) - (scrollerRect.left + scrollerRect.width / 2);
+
+scroller.scrollLeft += offset;
+   
     setTimeout(updateCenter, 50);
 
     /* -------- CHECK FOR SAVED DAILY CARD -------- */
@@ -379,6 +540,8 @@ window.addEventListener('load', () => {
         }
 
         savedCard.classList.add('selected','flipped');
+        scroller.style.overflowX = "hidden";
+        scroller.style.touchAction = "pan-y";
 
         // SCROLL DIRECTLY TO THAT CARD
         savedCard.scrollIntoView({
@@ -386,9 +549,13 @@ window.addEventListener('load', () => {
           block: "nearest"
         });
 
-        cards.forEach(c=>{
-          if(c !== savedCard) c.classList.add('blur');
-        });
+        cards.forEach(c => {
+  if (c !== savedCard) {
+    c.classList.add('blur');
+    c.style.opacity = "0";
+    c.style.pointerEvents = "none";
+  }
+});
 
         const keyword = extractKeyword(savedCard.dataset.src);
         revealWord.textContent = keyword;
