@@ -533,6 +533,11 @@ scroller.scrollLeft += offset;
 
         savedCard.classList.add('selected','flipped');
 
+        /* ---------- ANALYTICS ---------- */
+        track("card_revisited", {
+  card_number: savedCard.dataset.number
+});
+
 // Lock the selected card in place
 scroller.style.overflowX = "hidden";
 scroller.style.touchAction = "pan-y";
