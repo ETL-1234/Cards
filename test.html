@@ -594,6 +594,12 @@ scroller.scrollLeft += offset;
         }
 
         savedCard.classList.add('selected','flipped');
+
+  /* ---------- ANALYTICS ---------- */
+      trackAnalytics("card_revisited", {
+  card_number: savedCard.dataset.number
+});
+        
         scroller.style.overflowX = "hidden";
         scroller.style.touchAction = "pan-y";
 
