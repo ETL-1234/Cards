@@ -208,6 +208,46 @@ html,body{
 /* ---------- CONFIG ---------- */
 const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
 
+/* ---------- ANALYTICS ---------- */
+
+const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
+
+const APP_NAME = "ETL";
+const CONTENT_TYPE = "card deck";
+const TITLE_NAME = "IM";
+
+async function track(eventType, metadata = {}) {
+
+  try {
+
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/analytics_card`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          app_name: APP_NAME,
+          content_type: CONTENT_TYPE,
+          title_name: TITLE_NAME,
+          event_type: eventType,
+          metadata: metadata
+        })
+      }
+    ).catch(() => {});
+
+  } catch(err) {
+    console.log("Analytics error:", err);
+  }
+
+}
+  
+
   /* ---------- CARD LOCATION ---------- */
 const SLOTS = [
   { x:-3, y:60, rot:-18, scale:1 },
