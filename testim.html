@@ -496,6 +496,9 @@ scroller.style.touchAction = "pan-y";
 /* ---------- INITIAL ---------- */
 window.addEventListener('load', () => {
 
+  /* ---------- ANALYTICS ---------- */
+  track("deck_opened");
+
   requestAnimationFrame(() => {
 
    const cards = track.querySelectorAll('.card');
