@@ -565,7 +565,9 @@ window.addEventListener('load', () => {
   requestAnimationFrame(() => {
 
    const cards = track.querySelectorAll('.card');
-const middleCard = cards[Math.floor(cards.length / 2)];
+const randomIndex =
+  Math.floor(Math.random() * cards.length);
+const middleCard = cards[randomIndex];
 
 const scrollerRect = scroller.getBoundingClientRect();
 const cardRect = middleCard.getBoundingClientRect();
