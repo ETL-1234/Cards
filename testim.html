@@ -217,7 +217,7 @@ const APP_NAME = "ETL";
 const CONTENT_TYPE = "card deck";
 const TITLE_NAME = "IM";
 
-async function track(eventType, metadata = {}) {
+async function trackAnalytics(eventType, metadata = {}) {
 
   try {
 
@@ -489,7 +489,7 @@ scroller.style.touchAction = "pan-y";
   const index=Array.from(document.querySelectorAll('.card')).indexOf(center);
 
 /* ---------- ANALYTICS ---------- */
-track("card_drawn", {
+trackAnalytics("card_drawn", {
   card_number: center.dataset.number
 });
 
@@ -504,7 +504,7 @@ track("card_drawn", {
 window.addEventListener('load', () => {
 
   /* ---------- ANALYTICS ---------- */
-  track("deck_opened");
+  trackAnalytics("deck_opened");
 
   requestAnimationFrame(() => {
 
@@ -534,7 +534,7 @@ scroller.scrollLeft += offset;
         savedCard.classList.add('selected','flipped');
 
         /* ---------- ANALYTICS ---------- */
-        track("card_revisited", {
+      trackAnalytics("card_revisited", {
   card_number: savedCard.dataset.number
 });
 
