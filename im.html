@@ -208,6 +208,46 @@ html,body{
 /* ---------- CONFIG ---------- */
 const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
 
+/* ---------- ANALYTICS ---------- */
+
+const SUPABASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co";
+const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
+
+const APP_NAME = "ETL";
+const CONTENT_TYPE = "card deck";
+const TITLE_NAME = "IM";
+
+async function trackAnalytics(eventType, metadata = {}) {
+
+  try {
+
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/analytics_card`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          Prefer: "return=minimal"
+        },
+        body: JSON.stringify({
+          app_name: APP_NAME,
+          content_type: CONTENT_TYPE,
+          title_name: TITLE_NAME,
+          event_type: eventType,
+          metadata: metadata
+        })
+      }
+    ).catch(() => {});
+
+  } catch(err) {
+    console.log("Analytics error:", err);
+  }
+
+}
+  
+
   /* ---------- CARD LOCATION ---------- */
 const SLOTS = [
   { x:-3, y:60, rot:-18, scale:1 },
@@ -415,6 +455,7 @@ clearTimeout(snapTimeout);
 
 /* ---------- SELECT CENTER CARD ---------- */
 scroller.addEventListener('click',()=>{
+ 
   const center=document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
@@ -447,6 +488,12 @@ scroller.style.touchAction = "pan-y";
   const today=new Date().toISOString().split('T')[0];
   const index=Array.from(document.querySelectorAll('.card')).indexOf(center);
 
+/* ---------- ANALYTICS ---------- */
+trackAnalytics("card_drawn", {
+  card_number: center.dataset.number
+});
+
+  
   localStorage.setItem('dailyIamCard',JSON.stringify({
     cardIndex:index,
     date:today
@@ -455,6 +502,9 @@ scroller.style.touchAction = "pan-y";
 
 /* ---------- INITIAL ---------- */
 window.addEventListener('load', () => {
+
+  /* ---------- ANALYTICS ---------- */
+  trackAnalytics("deck_opened");
 
   requestAnimationFrame(() => {
 
@@ -482,6 +532,11 @@ scroller.scrollLeft += offset;
         if(!img.src) img.src=img.dataset.src;
 
         savedCard.classList.add('selected','flipped');
+
+        /* ---------- ANALYTICS ---------- */
+      trackAnalytics("card_revisited", {
+  card_number: savedCard.dataset.number
+});
 
 // Lock the selected card in place
 scroller.style.overflowX = "hidden";
