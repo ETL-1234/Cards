@@ -532,6 +532,11 @@ scroller.addEventListener('click', ()=>{
 
   const index = Array.from(document.querySelectorAll('.card')).indexOf(center);
 
+/* ---------- ANALYTICS ---------- */
+trackAnalytics("card_drawn", {
+  card_number: center.dataset.number
+});
+  
   localStorage.setItem('dailyCard', JSON.stringify({
     cardIndex: index,
     date: today
