@@ -455,6 +455,7 @@ clearTimeout(snapTimeout);
 
 /* ---------- SELECT CENTER CARD ---------- */
 scroller.addEventListener('click',()=>{
+ 
   const center=document.querySelector('.card.center');
   if(!center || center.classList.contains('selected')) return;
 
@@ -487,6 +488,12 @@ scroller.style.touchAction = "pan-y";
   const today=new Date().toISOString().split('T')[0];
   const index=Array.from(document.querySelectorAll('.card')).indexOf(center);
 
+/* ---------- ANALYTICS ---------- */
+track("card_drawn", {
+  card_number: center.dataset.number
+});
+
+  
   localStorage.setItem('dailyIamCard',JSON.stringify({
     cardIndex:index,
     date:today
