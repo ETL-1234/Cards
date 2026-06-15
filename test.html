@@ -559,6 +559,9 @@ function extractKeyword(url){
 /* ---------- INITIAL ---------- */
 window.addEventListener('load', () => {
 
+    /* ---------- ANALYTICS ---------- */
+  trackAnalytics("deck_opened");
+
   requestAnimationFrame(() => {
 
    const cards = track.querySelectorAll('.card');
