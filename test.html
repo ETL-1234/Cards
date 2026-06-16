@@ -321,6 +321,10 @@ IMAGES.forEach((src, i)=>{
   card.className = 'card';
   card.dataset.src = src;
 
+  /* ---------- ANALYTICS ---------- */
+card.dataset.number = String(i + 1).padStart(2, "0");
+card.dataset.word = CARD_NAMES[i];
+
   const inner = document.createElement('div');
   inner.className = 'card__inner';
 
