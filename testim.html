@@ -590,7 +590,8 @@ scroller.style.touchAction = "pan-y";
 
 /* ---------- ANALYTICS ---------- */
 trackAnalytics("card_drawn", {
-  card_number: center.dataset.number
+  card_number: center.dataset.number,
+  affirmation: center.dataset.word
 });
 
   
@@ -637,7 +638,8 @@ scroller.scrollLeft += offset;
 
         /* ---------- ANALYTICS ---------- */
       trackAnalytics("card_revisited", {
-  card_number: savedCard.dataset.number
+      card_number: savedCard.dataset.number,
+      affirmation: center.dataset.word
 });
 
 // Lock the selected card in place
