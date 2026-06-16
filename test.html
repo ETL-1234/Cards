@@ -544,6 +544,8 @@ trackAnalytics("card_drawn", {
   
   localStorage.setItem('dailyCard', JSON.stringify({
     cardIndex: index,
+    cardNumber: center.dataset.number,
+    revealWord: center.dataset.word,
     date: today
   }));
   
