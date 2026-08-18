@@ -678,7 +678,7 @@ scroller.style.touchAction = "pan-y";
         document.getElementById('revisitHeader').style.display="block";
       }
     }else{
-      localStorage.removeItem('dailyIamCard');
+      localStorage.removeItem('dailySelfcareCard');
     }
   });
 });
