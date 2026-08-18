@@ -641,7 +641,7 @@ scroller.scrollLeft += offset;
     setTimeout(updateCenter, 50);
 
 /* -------- CHECK FOR SAVED DAILY CARD -------- */
-    const saved=JSON.parse(localStorage.getItem('dailyIamCard'));
+    const saved=JSON.parse(localStorage.getItem('dailySelfcareCard'));
     const today=new Date().toISOString().split('T')[0];
 
     if(saved && saved.date===today){
