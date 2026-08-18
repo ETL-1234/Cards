@@ -206,7 +206,7 @@ html,body{
 <script>
 
 /* ---------- CONFIG ---------- */
-const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/IamCards/";
+const BASE_URL = "https://tppyzexttkuvcobbbmaz.supabase.co/storage/v1/object/public/SelfcareCards/";
 
 /* ---------- ANALYTICS ---------- */
 
@@ -215,7 +215,7 @@ const SUPABASE_KEY = "sb_publishable_VZiTsc0JGVx6tVf2Zu-9uQ_-FwjGpQW";
 
 const APP_NAME = "ETL";
 const CONTENT_TYPE = "card deck";
-const TITLE_NAME = "IM";
+const TITLE_NAME = "SC";
 
 async function trackAnalytics(eventType, metadata = {}) {
 
@@ -260,7 +260,7 @@ const SLOTS = [
 ];
   
 const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
-const TOTAL_CARDS = 95; // change anytime
+const TOTAL_CARDS = 111; // change anytime
 
  const CARD_WORDS = {
   "001": "this pause is separate",
