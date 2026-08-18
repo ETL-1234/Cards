@@ -610,7 +610,7 @@ trackAnalytics("card_drawn", {
 });
 
   
-  localStorage.setItem('dailyIamCard',JSON.stringify({
+  localStorage.setItem('dailySelfcareCard',JSON.stringify({
     cardIndex:index,
     cardNumber: center.dataset.number,
     affirmation: center.dataset.word,
