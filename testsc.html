@@ -509,22 +509,8 @@ card.style.transform = `
 
   
    closest.classList.add('center');
-  preloadVisibleCards();
  }
 
-  function preloadVisibleCards() {
-  const visibleCards = [...document.querySelectorAll('.card')]
-    .filter(card => card.style.opacity !== "0");
-
-  visibleCards.forEach(card => {
-    const img = card.querySelector('.face.front img');
-
-    if (img && !img.src) {
-      img.src = img.dataset.src;
-    }
-  });
-}
-  
 function snapCenterCard() {
 
   const centerCard = document.querySelector('.card.center');
