@@ -721,7 +721,12 @@ scroller.style.touchAction = "pan-y";
 });
 
         revealPanel.style.display="flex";
-        document.getElementById('revisitHeader').style.display="block";
+
+      H1.textContent = HEADER;
+
+      H1.style.display="block";
+      H2.style.display="none";
+       revisitHeader.style.display="block";
       }
     }else{
       localStorage.removeItem('dailySelfcareCard');
