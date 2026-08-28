@@ -218,9 +218,9 @@ html,body{
 
 <div class="revealPanel" id="revealPanel">
 
-  <h1 class="HEADER" id="H1"></h1>
+  <h1 class="HEADER" id="cardH1"></h1>
 
-  <h2 class="SUBHEADER" id="H2"></h2>
+  <h2 class="SUBHEADER" id="cardH2"></h2>
 
   <div class="revisitHeader" id="revisitHeader">
     This was your card for today
@@ -638,11 +638,11 @@ scroller.style.touchAction = "pan-y";
 
  revealPanel.style.display="flex";
 
-H1.textContent = HEADER;
-H2.textContent = SUBHEADER;
+cardH1.textContent = HEADER;
+cardH2.textContent = SUBHEADER;
 
-H1.style.display="block";
-H2.style.display="block";
+cardH1.style.display="block";
+cardH2.style.display="block";
 revisitHeader.style.display="none";
 
 /* -------- SAVE DAILY CARD -------- */
