@@ -216,17 +216,20 @@ html,body{
 <body>
 <div class="app">
 
-<div class="revealPanel" id="revealPanel">
+ <!-- ALWAYS VISIBLE HEADER -->
+  <div class="deckHeader">
+    <h1 class="cardH1">Today's card reading</h1>
+    <h2 class="cardH2">Tap and pull your daily self-care nudge</h2>
 
-  <h1 class="cardH1" id="cardH1"></h1>
-
-  <h2 class="cardH2" id="cardH2"></h2>
-
-  <div class="revisitHeader" id="revisitHeader">
-    This was your card for today
+    <div class="revisitHeader" id="revisitHeader">
+      This was your card for today
+    </div>
   </div>
 
-</div>
+
+  <!-- EXISTING REVEAL PANEL -->
+  <div class="revealPanel" id="revealPanel">
+  </div>
 
 <div class="viewport">
   <div class="scroller" id="scroller">
