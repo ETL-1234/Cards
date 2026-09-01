@@ -154,41 +154,13 @@ html,body{
   text-transform:uppercase;
 }
 
-.cardH1{
-  margin-top:10px;
-  margin-bottom:0;
-  text-align:center;
-  font-family:"Inter",Inter,Arial,sans-serif;
-  font-size:clamp(20px, 3vw, 34px);
-  font-weight:700;
-  line-height:1.2;
-  color:#000;
-}
-
-.cardH2{
-  margin:0;
-  text-align:center;
-  font-family:"Inter",Inter,Arial,sans-serif;
-  font-size:clamp(18px, 2.5vw, 34px);
-  font-weight:400;
-  margin-bottom:12px;
-  line-height:1.2;
-  color:#000;
-}
-
 .revisitHeader{
   display:none;
-  margin:0;
-  text-align:center;
-  font-family:"Inter",Inter,Arial,sans-serif;
-  font-size:clamp(18px, 2.5vw, 34px);
   font-weight:400;
   margin-bottom:12px;
-  line-height:1.2;
-  color:#000;
+  text-align:center;
+  font-size:clamp(18px, 2.5vw, 34px);
 }
-  
-  
 
 /* ========================= */
 /* TABLET + LARGER SCREENS  */
@@ -217,20 +189,11 @@ html,body{
 <body>
 <div class="app">
 
- <!-- ALWAYS VISIBLE HEADER -->
-  <div class="deckHeader">
-    <h1 class="cardH1">Today's card reading</h1>
-    <h2 class="cardH2">Tap and pull your daily self-care nudge</h2>
-
-    <div class="revisitHeader" id="revisitHeader">
-      This was your card for today
-    </div>
-  </div>
-
-
-  <!-- EXISTING REVEAL PANEL -->
   <div class="revealPanel" id="revealPanel">
+  <div class="revisitHeader" id="revisitHeader">
+    This was your card for today
   </div>
+</div>
 
 <div class="viewport">
   <div class="scroller" id="scroller">
@@ -298,9 +261,6 @@ const SLOTS = [
   
 const BACK_IMAGE = BASE_URL + "CARD-BACKSIDE.png";
 const TOTAL_CARDS = 111; // change anytime
-
-const CARD_H1 = "Today's card reading";
-const CARD_H2 = "Tap and pull your daily self-care nudge";
 
  const CARD_WORDS = {
   "001": "this pause is separate",
@@ -424,11 +384,7 @@ const IMAGES = Array.from({length: TOTAL_CARDS}, (_, i) => {
 
 const track = document.getElementById('track');
 const scroller = document.getElementById('scroller');
-  
 const revealPanel = document.getElementById('revealPanel');
-const cardH1 = document.getElementById('.cardH1');
-const cardH2 = document.getElementById('.cardH2');
-const revisitHeader = document.getElementById('revisitHeader');
 const revealWord = document.getElementById('revealWord');
 
 
@@ -640,14 +596,8 @@ scroller.style.touchAction = "pan-y";
   }
 });
 
-revealPanel.style.display="flex";
-
-cardH1.textContent = CARD_H1;
-cardH2.textContent = CARD_H2;
-
-cardH1.style.display="block";
-cardH2.style.display="none";
-revisitHeader.style.display="none";
+  revealPanel.style.display="flex";
+  document.getElementById('revisitHeader').style.display="none";
 
 /* -------- SAVE DAILY CARD -------- */
   const today=new Date().toISOString().split('T')[0];
@@ -724,13 +674,8 @@ scroller.style.touchAction = "pan-y";
   }
 });
 
-revealPanel.style.display="flex";
-
-cardH1.textContent = CARD_H1;
-
-cardH1.style.display="block";
-cardH2.style.display="none";
-revisitHeader.style.display="block";
+        revealPanel.style.display="flex";
+        document.getElementById('revisitHeader').style.display="block";
       }
     }else{
       localStorage.removeItem('dailySelfcareCard');
