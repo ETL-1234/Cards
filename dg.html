@@ -139,17 +139,15 @@ html,body{
   flex-direction: column;
   align-items: center;
   width:100%;
-  margin-top: 20px;
+  margin-top: 6px;
   margin-bottom: 10px;
   text-align: center;
   position: relative;
   z-index:20;
   }
-
-
   
 .revealPanel .label{
-  font-size:clamp(18px, 2.2vw, 28px);
+  font-size:clamp(16px, 2.2vw, 28px);
   font-weight:400;
 }
 
@@ -164,7 +162,15 @@ html,body{
   font-weight:400;
   margin-bottom:12px;
   text-align:center;
-  font-size:clamp(18px, 2.5vw, 34px);
+  font-size:clamp(16px, 2.5vw, 34px);
+}
+
+  .welcomeHeader{
+  font-weight:400;
+  margin-top: clamp(6px, 3vw, 30px);
+  margin-bottom:12px;
+  text-align:center;
+  font-size:clamp(16px, 2.5vw, 34px);
 }
 
 
@@ -188,9 +194,10 @@ html,body{
     transform:translateY(55px) scale(1.12)!important;
   }
 
-  .revisitHeader{
-    font-size:26px;
-  }
+ .revisitHeader,
+.welcomeHeader{
+  font-size:26px;
+}
 
   .revealPanel .label{
    font-size:22px;
@@ -209,6 +216,11 @@ html,body{
 
 <body>
 <div class="app">
+
+  <div class="welcomeHeader" id="welcomeHeader">
+    Swipe and tap for your daily guidance.
+  </div>
+
 
   <!-- Hidden text panel shown after a card is selected -->
   <div class="revealPanel" id="revealPanel">
@@ -528,8 +540,9 @@ scroller.addEventListener('click', ()=>{
   const keyword = extractKeyword(center.dataset.src);
   revealWord.textContent = keyword;
   revealPanel.style.display = "flex";
-
   document.getElementById('revisitHeader').style.display = "none";
+  document.getElementById('welcomeHeader').style.display="none";
+
 
   /* -------- SAVE DAILY CARD -------- */
   const today = new Date().toISOString().split('T')[0];
@@ -630,8 +643,9 @@ scroller.scrollLeft += offset;
         const keyword = extractKeyword(savedCard.dataset.src);
         revealWord.textContent = keyword;
         revealPanel.style.display = "flex";
-
         document.getElementById('revisitHeader').style.display = "block";
+        document.getElementById('welcomeHeader').style.display="none";
+
       }
 
     } else {
