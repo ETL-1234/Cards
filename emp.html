@@ -200,7 +200,7 @@ html,body{
 <div class="app">
 
   <div class="welcomeHeader" id="welcomeHeader">
-    Swipe and tap for your daily empowerment nudge.
+    Swipe and tap for your daily empowerment insight.
   </div>
 
 
@@ -623,7 +623,7 @@ trackAnalytics("card_drawn", {
 });
 
   
-  localStorage.setItem('dailySelfcareCard',JSON.stringify({
+  localStorage.setItem('dailyEmpowermentCard',JSON.stringify({
     cardIndex:index,
     cardNumber: center.dataset.number,
     affirmation: center.dataset.word,
@@ -654,7 +654,7 @@ scroller.scrollLeft += offset;
     setTimeout(updateCenter, 50);
 
 /* -------- CHECK FOR SAVED DAILY CARD -------- */
-    const saved=JSON.parse(localStorage.getItem('dailySelfcareCard'));
+    const saved=JSON.parse(localStorage.getItem('dailyEmpowermentCard'));
     const today=new Date().toISOString().split('T')[0];
 
     if(saved && saved.date===today){
@@ -693,7 +693,7 @@ scroller.style.touchAction = "pan-y";
 
       }
     }else{
-      localStorage.removeItem('dailySelfcareCard');
+      localStorage.removeItem('dailyEmpowermentCard');
     }
   });
 });
