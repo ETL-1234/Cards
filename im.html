@@ -135,7 +135,7 @@ html,body{
   flex-direction:column;
   align-items:center;
    /* Space above the text */
-  margin-top: clamp(24px, 6vw, 60px);
+  margin-top: clamp(6px, 6vw, 60px);
   /* Space between the text and the card */
   margin-bottom: clamp(20px, 4vw, 40px);
   text-align: center;
@@ -159,8 +159,17 @@ html,body{
   font-weight:400;
   margin-bottom:12px;
   text-align:center;
-  font-size:clamp(18px, 2.5vw, 34px);
+  font-size:clamp(16px, 2.5vw, 34px);
 }
+
+  .welcomeHeader{
+  font-weight:400;
+  margin-top: clamp(12px, 3vw, 30px);
+  margin-bottom:12px;
+  text-align:center;
+  font-size:clamp(16px, 2.5vw, 34px);
+}
+
 
 /* ========================= */
 /* TABLET + LARGER SCREENS  */
@@ -177,9 +186,11 @@ html,body{
     transform:translateY(55px) scale(1.12)!important;
   }
 
-  .revisitHeader{
-    font-size:26px;
-  }
+ .revisitHeader,
+.welcomeHeader{
+  font-size:26px;
+}
+
   
 }
  
@@ -188,6 +199,11 @@ html,body{
 
 <body>
 <div class="app">
+
+  <div class="welcomeHeader" id="welcomeHeader">
+   Swipe and tap for your daily affirmation.
+  </div>
+
 
   <div class="revealPanel" id="revealPanel">
   <div class="revisitHeader" id="revisitHeader">
@@ -582,6 +598,8 @@ scroller.style.touchAction = "pan-y";
 
   revealPanel.style.display="flex";
   document.getElementById('revisitHeader').style.display="none";
+  document.getElementById('welcomeHeader').style.display="none";
+
 
 /* -------- SAVE DAILY CARD -------- */
   const today=new Date().toISOString().split('T')[0];
@@ -660,6 +678,8 @@ scroller.style.touchAction = "pan-y";
 
         revealPanel.style.display="flex";
         document.getElementById('revisitHeader').style.display="block";
+        document.getElementById('welcomeHeader').style.display="none";
+
       }
     }else{
       localStorage.removeItem('dailyIamCard');
