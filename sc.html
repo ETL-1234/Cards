@@ -665,13 +665,17 @@ scroller.scrollLeft += offset;
     const today=new Date().toISOString().split('T')[0];
 
     if(saved && saved.date===today){
-      const cards=document.querySelectorAll('.card');
-      const savedCard=cards[saved.cardIndex];
-      if(savedCard){
-        const img=savedCard.querySelector('.face.front img');
-        if(!img.src) img.src=img.dataset.src;
+  const cards=document.querySelectorAll('.card');
+  const savedCard=cards[saved.cardIndex];
 
-        savedCard.classList.add('selected','flipped');
+  if(savedCard){
+
+    document.querySelector('.viewport').classList.add('revisit');
+
+    const img=savedCard.querySelector('.face.front img');
+    if(!img.src) img.src=img.dataset.src;
+
+    savedCard.classList.add('selected','flipped');
 
         /* ---------- ANALYTICS ---------- */
       trackAnalytics("card_revisited", {
