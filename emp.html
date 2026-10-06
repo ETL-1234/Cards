@@ -47,6 +47,10 @@ html,body{
   overflow:visible;
 }
 
+  .viewport.revisit{
+  transform:translateY(30px);
+}
+  
 .scroller{
   display:flex;
   width:100%;
@@ -661,6 +665,9 @@ scroller.scrollLeft += offset;
       const cards=document.querySelectorAll('.card');
       const savedCard=cards[saved.cardIndex];
       if(savedCard){
+
+         document.querySelector('.viewport').classList.add('revisit');
+
         const img=savedCard.querySelector('.face.front img');
         if(!img.src) img.src=img.dataset.src;
 
