@@ -1071,49 +1071,61 @@ function restoreSavedCard(){
   }
 
 
-  /* ---------------------------------------------
-     GET EXACT SAVED CARD
-     --------------------------------------------- */
-  if(saved && saved.date===today){
+ 
+/* ---------------------------------------------
+   GET EXACT SAVED CARD
+   --------------------------------------------- */
 
-  const cards=document.querySelectorAll(".card");
-  const savedCard=cards[saved.cardIndex];
+const cards =
+  document.querySelectorAll(".card");
 
-
-  if(!savedCard){
-
-    localStorage.removeItem(
-      "dailyMonthlyCard"
-    );
-
-    return false;
-
-  }
+const savedCard =
+  cards[saved.cardIndex];
 
 
-  savedCard.style.opacity = "1";
-  savedCard.style.pointerEvents = "auto";
+if(!savedCard){
 
+  localStorage.removeItem(
+    "dailyMonthlyCard"
+  );
 
-  /* ---------------------------------------------
-     REVISIT POSITION
-     --------------------------------------------- */
-
- if(savedCard){
-
-    document.querySelector('.viewport').classList.add('revisit');
-
-
-
-  /* ---------------------------------------------
-     LAZY LOAD FRONT IMAGE
-     --------------------------------------------- */
-
- const img=savedCard.querySelector('.face.front img');
-    if(!img.src) img.src=img.dataset.src;
+  return false;
 
 }
 
+
+/* ---------------------------------------------
+   REVISIT POSITION
+   --------------------------------------------- */
+
+viewport.classList.add("revisit");
+
+
+/* ---------------------------------------------
+   LOAD FRONT IMAGE
+   --------------------------------------------- */
+
+const img =
+  savedCard.querySelector(
+    ".face.front img"
+  );
+
+if(img){
+
+  img.src =
+    img.dataset.src;
+
+}
+
+
+/* ---------------------------------------------
+   SELECT + FLIP EXACT SAVED CARD
+   --------------------------------------------- */
+
+savedCard.classList.add(
+  "selected",
+  "flipped"
+);
 
   /* ---------------------------------------------
      SELECT + FLIP EXACT SAVED CARD
