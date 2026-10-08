@@ -1025,54 +1025,23 @@ localStorage.setItem(
 
 function restoreSavedCard(){
 
-  const savedRaw =
-    localStorage.getItem(
-      "dailyMonthlyCard"
+  const saved =
+    JSON.parse(
+      localStorage.getItem("dailyMonthlyCard")
     );
-
-
-  if(!savedRaw){
-
-    return false;
-
-  }
-
-
-  let saved;
-
-
-  try{
-
-    saved =
-      JSON.parse(savedRaw);
-
-  }catch(err){
-
-    localStorage.removeItem(
-      "dailyMonthlyCard"
-    );
-
-    return false;
-
-  }
-
 
   const today =
-    getLocalDate();
+    new Date().toISOString().split("T")[0];
 
+  /* ---------------------------------------------
+     SAME CHECK AS ORIGINAL CODE
+     PLUS CURRENT DECK CHECK
+     --------------------------------------------- */
 
-  const todayString =
-    `${today.year}-${String(today.month).padStart(2,"0")}-${String(today.day).padStart(2,"0")}`;
-
-
-  /*
-    The saved card must belong to:
-    
-    1. today
-    2. the currently active deck
-  */
-
-  if(saved.date !== todayString){
+  if(
+    !saved ||
+    saved.date !== today
+  ){
 
     localStorage.removeItem(
       "dailyMonthlyCard"
@@ -1082,8 +1051,14 @@ function restoreSavedCard(){
 
   }
 
+  /* ---------------------------------------------
+     MAKE SURE THE SAVED CARD BELONGS TO
+     THE CURRENT MONTHLY DECK
+     --------------------------------------------- */
 
-  if(saved.deckId !== CURRENT_DECK.deck_id){
+  if(
+    saved.deckId !== CURRENT_DECK.deck_id
+  ){
 
     localStorage.removeItem(
       "dailyMonthlyCard"
@@ -1093,45 +1068,44 @@ function restoreSavedCard(){
 
   }
 
-
-  /*
-    Find the card by card number.
-    We do NOT use the old array index because
-    the deck is duplicated for the carousel.
-  */
+  /* ---------------------------------------------
+     GET ALL DUPLICATED CARDS
+     --------------------------------------------- */
 
   const cards =
-    [...document.querySelectorAll(".card")];
+    document.querySelectorAll(".card");
 
+  /* ---------------------------------------------
+     GET THE EXACT CARD INDEX THAT WAS SAVED
+     --------------------------------------------- */
 
   const savedCard =
-    cards.find(card =>
-
-      card.dataset.number ===
-      saved.cardNumber
-
-  );
-
+    cards[saved.cardIndex];
 
   if(!savedCard){
 
+    localStorage.removeItem(
+      "dailyMonthlyCard"
+    );
+
     return false;
 
   }
 
-
   /* ---------------------------------------------
-     Position the saved card
+     REVISIT POSITION
      --------------------------------------------- */
 
   viewport.classList.add("revisit");
 
+  /* ---------------------------------------------
+     LAZY LOAD FRONT IMAGE
+     --------------------------------------------- */
 
   const img =
     savedCard.querySelector(
       ".face.front img"
     );
-
 
   if(!img.src){
 
@@ -1140,33 +1114,35 @@ function restoreSavedCard(){
 
   }
 
+  /* ---------------------------------------------
+     SELECT + FLIP EXACT SAVED CARD
+     --------------------------------------------- */
 
   savedCard.classList.add(
     "selected",
     "flipped"
   );
 
-
   /* ---------------------------------------------
-     Analytics
+     ANALYTICS
      --------------------------------------------- */
 
-  trackAnalytics("card_revisited", {
+  trackAnalytics(
+    "card_revisited",
+    {
+      card_number:
+        savedCard.dataset.number,
 
-    card_number:
-      savedCard.dataset.number,
+      deck_id:
+        CURRENT_DECK.deck_id,
 
-    deck_id:
-      CURRENT_DECK.deck_id,
-
-    reveal_word:
-      savedCard.dataset.word || ""
-
-  });
-
+      affirmation:
+        savedCard.dataset.word
+    }
+  );
 
   /* ---------------------------------------------
-     Lock selected card
+     LOCK THE SELECTED CARD
      --------------------------------------------- */
 
   scroller.style.overflowX =
@@ -1175,19 +1151,17 @@ function restoreSavedCard(){
   scroller.style.touchAction =
     "pan-y";
 
-
   /* ---------------------------------------------
-     Center selected card
+     SCROLL DIRECTLY TO THE EXACT SAVED CARD
      --------------------------------------------- */
 
   savedCard.scrollIntoView({
-    inline:"center",
-    block:"nearest"
+    inline: "center",
+    block: "nearest"
   });
 
-
   /* ---------------------------------------------
-     Hide all other cards
+     HIDE ALL OTHER CARDS
      --------------------------------------------- */
 
   cards.forEach(c => {
@@ -1198,16 +1172,14 @@ function restoreSavedCard(){
 
       c.style.opacity = "0";
 
-      c.style.pointerEvents =
-        "none";
+      c.style.pointerEvents = "none";
 
     }
 
   });
 
-
   /* ---------------------------------------------
-     UI
+     SHOW REVISIT MESSAGE
      --------------------------------------------- */
 
   revealPanel.style.display =
@@ -1219,11 +1191,9 @@ function restoreSavedCard(){
   welcomeHeader.style.display =
     "none";
 
-
   return true;
 
 }
-
 
 /* =========================================================
    INITIALISE MONTHLY DECK
