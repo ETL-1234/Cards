@@ -1024,23 +1024,21 @@ localStorage.setItem(
 
 function restoreSavedCard(){
 
-  const saved =
-    JSON.parse(
-      localStorage.getItem("dailyMonthlyCard")
-    );
+  const savedRaw =
+    localStorage.getItem("dailyMonthlyCard");
 
-  const today =
-    new Date().toISOString().split("T")[0];
+  if(!savedRaw){
+    return false;
+  }
 
-  /* ---------------------------------------------
-     SAME CHECK AS ORIGINAL CODE
-     PLUS CURRENT DECK CHECK
-     --------------------------------------------- */
+  let saved;
 
-  if(
-    !saved ||
-    saved.date !== today
-  ){
+  try{
+
+    saved =
+      JSON.parse(savedRaw);
+
+  }catch(err){
 
     localStorage.removeItem(
       "dailyMonthlyCard"
@@ -1050,9 +1048,35 @@ function restoreSavedCard(){
 
   }
 
+
   /* ---------------------------------------------
-     MAKE SURE THE SAVED CARD BELONGS TO
-     THE CURRENT MONTHLY DECK
+     CURRENT DATE
+     --------------------------------------------- */
+
+  const today =
+    getLocalDate();
+
+  const todayString =
+    `${today.year}-${String(today.month).padStart(2,"0")}-${String(today.day).padStart(2,"0")}`;
+
+
+  /* ---------------------------------------------
+     CHECK DATE
+     --------------------------------------------- */
+
+  if(saved.date !== todayString){
+
+    localStorage.removeItem(
+      "dailyMonthlyCard"
+    );
+
+    return false;
+
+  }
+
+
+  /* ---------------------------------------------
+     CHECK DECK
      --------------------------------------------- */
 
   if(
@@ -1067,38 +1091,48 @@ function restoreSavedCard(){
 
   }
 
+
   /* ---------------------------------------------
-     GET ALL DUPLICATED CARDS
+     GET EXACT SAVED CARD
      --------------------------------------------- */
 
   const cards =
     document.querySelectorAll(".card");
 
+  const savedCard =
+    cards[saved.cardIndex];
+
+
+  if(!savedCard){
+
+    localStorage.removeItem(
+      "dailyMonthlyCard"
+    );
+
+    return false;
+
+  }
+
+
   /* ---------------------------------------------
-     GET THE EXACT CARD INDEX THAT WAS SAVED
+     IMPORTANT:
+     The initial updateCenter() may have hidden
+     this card because the carousel initially
+     started at a random position.
+     Make the saved card visible again.
      --------------------------------------------- */
 
-  const savedCard =
-  cards[saved.cardIndex];
+  savedCard.style.opacity = "1";
 
-if(!savedCard){
+  savedCard.style.pointerEvents = "auto";
 
-  localStorage.removeItem(
-    "dailyMonthlyCard"
-  );
-
-  return false;
-
-}
-
-savedCard.style.opacity = "1";
-savedCard.style.pointerEvents = "auto";
 
   /* ---------------------------------------------
      REVISIT POSITION
      --------------------------------------------- */
 
   viewport.classList.add("revisit");
+
 
   /* ---------------------------------------------
      LAZY LOAD FRONT IMAGE
@@ -1109,12 +1143,13 @@ savedCard.style.pointerEvents = "auto";
       ".face.front img"
     );
 
-  if(!img.src){
+  if(img && !img.src){
 
     img.src =
       img.dataset.src;
 
   }
+
 
   /* ---------------------------------------------
      SELECT + FLIP EXACT SAVED CARD
@@ -1124,6 +1159,7 @@ savedCard.style.pointerEvents = "auto";
     "selected",
     "flipped"
   );
+
 
   /* ---------------------------------------------
      ANALYTICS
@@ -1139,9 +1175,10 @@ savedCard.style.pointerEvents = "auto";
         CURRENT_DECK.deck_id,
 
       affirmation:
-        savedCard.dataset.word
+        savedCard.dataset.word || ""
     }
   );
+
 
   /* ---------------------------------------------
      LOCK THE SELECTED CARD
@@ -1153,14 +1190,16 @@ savedCard.style.pointerEvents = "auto";
   scroller.style.touchAction =
     "pan-y";
 
+
   /* ---------------------------------------------
-     SCROLL DIRECTLY TO THE EXACT SAVED CARD
+     SCROLL DIRECTLY TO THE SAVED CARD
      --------------------------------------------- */
 
   savedCard.scrollIntoView({
     inline: "center",
     block: "nearest"
   });
+
 
   /* ---------------------------------------------
      HIDE ALL OTHER CARDS
@@ -1180,6 +1219,7 @@ savedCard.style.pointerEvents = "auto";
 
   });
 
+
   /* ---------------------------------------------
      SHOW REVISIT MESSAGE
      --------------------------------------------- */
@@ -1192,6 +1232,7 @@ savedCard.style.pointerEvents = "auto";
 
   welcomeHeader.style.display =
     "none";
+
 
   return true;
 
