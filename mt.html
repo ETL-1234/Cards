@@ -994,20 +994,27 @@ scroller.addEventListener("click", () => {
      on the duplicated card's array position.
      --------------------------------------------- */
 
-  localStorage.setItem(
-    "dailyMonthlyCard",
-    JSON.stringify({
+ const index =
+  Array.from(
+    document.querySelectorAll(".card")
+  ).indexOf(center);
 
-      deckId: deckId,
+localStorage.setItem(
+  "dailyMonthlyCard",
+  JSON.stringify({
 
-      cardNumber: cardNumber,
+    cardIndex: index,
 
-      revealWord: affirmation,
+    cardNumber: center.dataset.number,
 
-      date: dateString
+    affirmation: center.dataset.word,
 
-    })
-  );
+    deckId: center.dataset.deckId,
+
+    date: dateString
+
+  })
+);
 
 });
 
