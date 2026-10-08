@@ -1079,17 +1079,20 @@ function restoreSavedCard(){
      --------------------------------------------- */
 
   const savedCard =
-    cards[saved.cardIndex];
+  cards[saved.cardIndex];
 
-  if(!savedCard){
+if(!savedCard){
 
-    localStorage.removeItem(
-      "dailyMonthlyCard"
-    );
+  localStorage.removeItem(
+    "dailyMonthlyCard"
+  );
 
-    return false;
+  return false;
 
-  }
+}
+
+savedCard.style.opacity = "1";
+savedCard.style.pointerEvents = "auto";
 
   /* ---------------------------------------------
      REVISIT POSITION
