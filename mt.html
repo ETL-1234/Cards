@@ -1135,15 +1135,8 @@ function restoreSavedCard(){
      LAZY LOAD FRONT IMAGE
      --------------------------------------------- */
 
-  const img =
-    savedCard.querySelector(
-      ".face.front img"
-    );
-
- if(img && !img.getAttribute("src")){
-
-  img.src =
-    img.dataset.src;
+ const img=savedCard.querySelector('.face.front img');
+    if(!img.src) img.src=img.dataset.src;
 
 }
 
