@@ -1140,12 +1140,12 @@ function restoreSavedCard(){
       ".face.front img"
     );
 
-  if(img && !img.src){
+ if(img && !img.getAttribute("src")){
 
-    img.src =
-      img.dataset.src;
+  img.src =
+    img.dataset.src;
 
-  }
+}
 
 
   /* ---------------------------------------------
