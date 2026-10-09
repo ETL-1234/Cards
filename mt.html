@@ -907,13 +907,7 @@ scroller.addEventListener("click", () => {
      DAILY CARD DATA
      --------------------------------------------- */
 
-  const today =
-    getLocalDate();
-
-
-  const dateString =
-    `${today.year}-${String(today.month).padStart(2,"0")}-${String(today.day).padStart(2,"0")}`;
-
+  const dateString = new Date().toISOString().split("T")[0];
 
   const cardNumber =
     center.dataset.number;
