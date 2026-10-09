@@ -1274,13 +1274,9 @@ async function initialiseDeck(){
         offset;
 
 
-      setTimeout(() => {
+     updateCenter();
 
-        updateCenter();
-
-      restoreSavedCard();
-
-      }, 50);
+     restoreSavedCard();
 
     });
 
