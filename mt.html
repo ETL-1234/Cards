@@ -289,22 +289,6 @@ async function trackAnalytics(eventType, metadata = {}) {
 }
 
 
-/* =========================================================
-   CURRENT DATE
-   =========================================================*/
-
-function getLocalDate(){
-
-  const now = new Date();
-
-  return {
-    year: now.getFullYear(),
-    month: now.getMonth() + 1,
-    day: now.getDate()
-  };
-
-}
-
 
 /* =========================================================
    SUPABASE REQUEST HELPER
