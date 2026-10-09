@@ -1326,37 +1326,12 @@ async function initialiseDeck(){
 
     });
 
-
   }catch(err){
 
-    console.error(
-      "Monthly card deck error:",
-      err
-    );
-
-
-    loadingMessage.style.display =
-      "none";
-
-
-    errorMessage.style.display =
-      "block";
-
-
-    /*
-      Analytics for debugging.
-    */
-
-    trackAnalytics(
-      "deck_error",
-      {
-        error:
-          String(err.message || err)
-      }
-    );
+    // Silently handle deck initialization errors.
 
   }
-
+ 
 }
 
 
