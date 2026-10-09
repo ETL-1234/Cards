@@ -999,11 +999,7 @@ function restoreSavedCard(){
      CURRENT DATE
      --------------------------------------------- */
 
-  const today =
-    getLocalDate();
-
-  const todayString =
-    `${today.year}-${String(today.month).padStart(2,"0")}-${String(today.day).padStart(2,"0")}`;
+  const todayString = new Date().toISOString().split("T")[0];
 
 
   /* ---------------------------------------------
