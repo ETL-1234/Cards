@@ -346,7 +346,7 @@ async function supabaseFetch(endpoint){
 
 async function getCurrentDeck(){
 
-  const { month } = getLocalDate();
+  const month = new Date().getUTCMonth() + 1;
 
   const endpoint =
     `/rest/v1/monthly_card_deck` +
