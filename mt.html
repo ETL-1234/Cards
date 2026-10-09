@@ -1001,22 +1001,15 @@ function restoreSavedCard(){
   }
 
 
-  /* ---------------------------------------------
-     CHECK DECK
-     --------------------------------------------- */
+ /* ---------------------------------------------
+   CHECK DECK
+   --------------------------------------------- */
 
-  if(
-    saved.deckId !== CURRENT_DECK.deck_id
-  ){
-
-    localStorage.removeItem(
-      "dailyMonthlyCard"
-    );
-
-    return false;
-
-  }
-
+if (
+  String(saved.deckId) !== String(CURRENT_DECK.deck_id)
+) {
+  return false;
+}
 
  
 /* ---------------------------------------------
