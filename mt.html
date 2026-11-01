@@ -938,34 +938,42 @@ scroller.addEventListener("click", () => {
 
   });
 
-
-  /* ---------------------------------------------
+/* ---------------------------------------------
    SAVE DAILY CARD
    --------------------------------------------- */
+
+const index =
+  Array.from(
+    document.querySelectorAll(".card")
+  ).indexOf(center);
 
 localStorage.setItem(
   "dailyMonthlyCard",
   JSON.stringify({
 
+    cardIndex: index,
+
     cardNumber: center.dataset.number,
 
     affirmation: center.dataset.word || "",
-
-    deckId: center.dataset.deckId,
 
     date: dateString
 
   })
 );
+ 
 
 });
-
 
 /* =========================================================
    REVISIT TODAY'S SAVED CARD
    ========================================================= */
 
 function restoreSavedCard(){
+
+  /* ---------------------------------------------
+     GET SAVED CARD
+     --------------------------------------------- */
 
   const savedRaw =
     localStorage.getItem("dailyMonthlyCard");
@@ -991,17 +999,12 @@ function restoreSavedCard(){
 
 
   /* ---------------------------------------------
-     CURRENT DATE
-     --------------------------------------------- */
-
-   const todayString = getLocalDate();
-
-
-  /* ---------------------------------------------
      CHECK DATE
      --------------------------------------------- */
 
-  if(saved.date !== todayString){
+  const today = getLocalDate();
+
+  if(saved.date !== today){
 
     localStorage.removeItem("dailyMonthlyCard");
 
@@ -1011,38 +1014,14 @@ function restoreSavedCard(){
 
 
   /* ---------------------------------------------
-     CHECK MONTHLY DECK
-     --------------------------------------------- */
-
-  if(
-    String(saved.deckId) !==
-    String(CURRENT_DECK.deck_id)
-  ){
-
-    localStorage.removeItem("dailyMonthlyCard");
-
-    return false;
-
-  }
-
-
-  /* ---------------------------------------------
-     FIND EXACT SAVED CARD
+     GET EXACT SAVED CARD
      --------------------------------------------- */
 
   const cards =
     document.querySelectorAll(".card");
 
   const savedCard =
-    Array.from(cards).find(card =>
-
-      String(card.dataset.number) ===
-      String(saved.cardNumber) &&
-
-      String(card.dataset.deckId) ===
-      String(saved.deckId)
-
-    );
+    cards[saved.cardIndex];
 
 
   if(!savedCard){
@@ -1066,14 +1045,15 @@ function restoreSavedCard(){
      --------------------------------------------- */
 
   const img =
-    savedCard.querySelector(
-      ".face.front img"
-    );
+    savedCard.querySelector(".face.front img");
 
   if(img){
 
-    img.src =
-      img.dataset.src;
+    if(!img.src || img.src === window.location.href){
+
+      img.src = img.dataset.src;
+
+    }
 
   }
 
@@ -1092,36 +1072,26 @@ function restoreSavedCard(){
      ANALYTICS
      --------------------------------------------- */
 
-  trackAnalytics(
-    "card_revisited",
-    {
+  trackAnalytics("card_revisited", {
 
-      card_number:
-        savedCard.dataset.number,
+    card_number: savedCard.dataset.number,
 
-      deck_id:
-        CURRENT_DECK.deck_id,
+    affirmation: savedCard.dataset.word
 
-      affirmation:
-        savedCard.dataset.word || ""
-
-    }
-  );
+  });
 
 
   /* ---------------------------------------------
      LOCK SELECTED CARD
      --------------------------------------------- */
 
-  scroller.style.overflowX =
-    "hidden";
+  scroller.style.overflowX = "hidden";
 
-  scroller.style.touchAction =
-    "pan-y";
+  scroller.style.touchAction = "pan-y";
 
 
   /* ---------------------------------------------
-     SCROLL TO SAVED CARD
+     SCROLL DIRECTLY TO SAVED CARD
      --------------------------------------------- */
 
   savedCard.scrollIntoView({
@@ -1156,19 +1126,17 @@ function restoreSavedCard(){
      SHOW REVISIT MESSAGE
      --------------------------------------------- */
 
-  revealPanel.style.display =
-    "flex";
+  revealPanel.style.display = "flex";
 
-  revisitHeader.style.display =
-    "block";
+  revisitHeader.style.display = "block";
 
-  welcomeHeader.style.display =
-    "none";
+  welcomeHeader.style.display = "none";
 
 
   return true;
 
 }
+
 
 /* =========================================================
    INITIALISE MONTHLY DECK
