@@ -950,15 +950,6 @@ const index = Array.from(
 ).indexOf(center);
 
 
-/* ---------- ANALYTICS ---------- */
-
-trackAnalytics("card_drawn", {
-  card_number: center.dataset.number,
-  affirmation: center.dataset.word,
-  deck_id: center.dataset.deckId
-});
-
-
   /* ---------- LOCAL STORAGE ---------- */
   
 localStorage.setItem('dailyMonthlyCard', JSON.stringify({
