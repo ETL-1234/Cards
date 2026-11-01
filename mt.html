@@ -920,23 +920,16 @@ scroller.addEventListener("click", () => {
 
 
   /* ---------------------------------------------
-     SAVE DAILY CARD
-     --------------------------------------------- */
-
- const index =
-  Array.from(
-    document.querySelectorAll(".card")
-  ).indexOf(center);
+   SAVE DAILY CARD
+   --------------------------------------------- */
 
 localStorage.setItem(
   "dailyMonthlyCard",
   JSON.stringify({
 
-    cardIndex: index,
-
     cardNumber: center.dataset.number,
 
-    affirmation: center.dataset.word,
+    affirmation: center.dataset.word || "",
 
     deckId: center.dataset.deckId,
 
