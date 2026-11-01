@@ -1232,56 +1232,46 @@ async function initialiseDeck(){
        Initial carousel position
        --------------------------------------------- */
 
-    requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
 
-      const cards =
-        track.querySelectorAll(".card");
+  const cards =
+    track.querySelectorAll(".card");
 
+  if(!cards.length) return;
 
-      if(!cards.length) return;
+  const randomIndex =
+    Math.floor(
+      Math.random() *
+      cards.length
+    );
 
+  const middleCard =
+    cards[randomIndex];
 
-      const randomIndex =
-        Math.floor(
-          Math.random() *
-          cards.length
-        );
+  const scrollerRect =
+    scroller.getBoundingClientRect();
 
+  const cardRect =
+    middleCard.getBoundingClientRect();
 
-      const middleCard =
-        cards[randomIndex];
+  const offset =
+    (
+      cardRect.left +
+      cardRect.width / 2
+    )
+    -
+    (
+      scrollerRect.left +
+      scrollerRect.width / 2
+    );
 
+  scroller.scrollLeft += offset;
 
-      const scrollerRect =
-        scroller.getBoundingClientRect();
+  updateCenter();
 
+  restoreSavedCard();
 
-      const cardRect =
-        middleCard.getBoundingClientRect();
-
-
-      const offset =
-        (
-          cardRect.left +
-          cardRect.width / 2
-        )
-        -
-        (
-          scrollerRect.left +
-          scrollerRect.width / 2
-        );
-
-
-      scroller.scrollLeft +=
-        offset;
-
-
-     updateCenter();
-
-     restoreSavedCard();
-
-    });
-
+});
   }catch(err){
 
     // Silently handle deck initialization errors.
