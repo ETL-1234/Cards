@@ -954,18 +954,16 @@ function restoreSavedCard(){
     return false;
   }
 
+
   let saved;
 
   try{
 
-    saved =
-      JSON.parse(savedRaw);
+    saved = JSON.parse(savedRaw);
 
   }catch(err){
 
-    localStorage.removeItem(
-      "dailyMonthlyCard"
-    );
+    localStorage.removeItem("dailyMonthlyCard");
 
     return false;
 
@@ -976,7 +974,8 @@ function restoreSavedCard(){
      CURRENT DATE
      --------------------------------------------- */
 
-  const todayString = new Date().toISOString().split("T")[0];
+  const todayString =
+    new Date().toISOString().split("T")[0];
 
 
   /* ---------------------------------------------
@@ -985,82 +984,91 @@ function restoreSavedCard(){
 
   if(saved.date !== todayString){
 
-    localStorage.removeItem(
-      "dailyMonthlyCard"
-    );
+    localStorage.removeItem("dailyMonthlyCard");
 
     return false;
 
   }
 
 
- /* ---------------------------------------------
-   CHECK DECK
-   --------------------------------------------- */
+  /* ---------------------------------------------
+     CHECK MONTHLY DECK
+     --------------------------------------------- */
 
-if (
-  String(saved.deckId) !== String(CURRENT_DECK.deck_id)
-) {
-  return false;
-}
+  if(
+    String(saved.deckId) !==
+    String(CURRENT_DECK.deck_id)
+  ){
 
- 
-/* ---------------------------------------------
-   GET EXACT SAVED CARD
-   --------------------------------------------- */
+    localStorage.removeItem("dailyMonthlyCard");
 
-const cards =
-  document.querySelectorAll(".card");
+    return false;
 
-const savedCard =
-  cards[saved.cardIndex];
+  }
 
 
-if(!savedCard){
+  /* ---------------------------------------------
+     FIND EXACT SAVED CARD
+     --------------------------------------------- */
 
-  localStorage.removeItem(
-    "dailyMonthlyCard"
+  const cards =
+    document.querySelectorAll(".card");
+
+  const savedCard =
+    Array.from(cards).find(card =>
+
+      String(card.dataset.number) ===
+      String(saved.cardNumber) &&
+
+      String(card.dataset.deckId) ===
+      String(saved.deckId)
+
+    );
+
+
+  if(!savedCard){
+
+    localStorage.removeItem("dailyMonthlyCard");
+
+    return false;
+
+  }
+
+
+  /* ---------------------------------------------
+     REVISIT POSITION
+     --------------------------------------------- */
+
+  viewport.classList.add("revisit");
+
+
+  /* ---------------------------------------------
+     LOAD FRONT IMAGE
+     --------------------------------------------- */
+
+  const img =
+    savedCard.querySelector(
+      ".face.front img"
+    );
+
+  if(img){
+
+    img.src =
+      img.dataset.src;
+
+  }
+
+
+  /* ---------------------------------------------
+     SELECT + FLIP SAVED CARD
+     --------------------------------------------- */
+
+  savedCard.classList.add(
+    "selected",
+    "flipped"
   );
 
-  return false;
 
-}
-
-
-/* ---------------------------------------------
-   REVISIT POSITION
-   --------------------------------------------- */
-
-viewport.classList.add("revisit");
-
-
-/* ---------------------------------------------
-   LOAD FRONT IMAGE
-   --------------------------------------------- */
-
-const img =
-  savedCard.querySelector(
-    ".face.front img"
-  );
-
-if(img){
-
-  img.src =
-    img.dataset.src;
-
-}
-
-
-/* ---------------------------------------------
-   SELECT + FLIP EXACT SAVED CARD
-   --------------------------------------------- */
-
-savedCard.classList.add(
-  "selected",
-  "flipped"
-);
-
- 
   /* ---------------------------------------------
      ANALYTICS
      --------------------------------------------- */
@@ -1068,6 +1076,7 @@ savedCard.classList.add(
   trackAnalytics(
     "card_revisited",
     {
+
       card_number:
         savedCard.dataset.number,
 
@@ -1076,12 +1085,13 @@ savedCard.classList.add(
 
       affirmation:
         savedCard.dataset.word || ""
+
     }
   );
 
 
   /* ---------------------------------------------
-     LOCK THE SELECTED CARD
+     LOCK SELECTED CARD
      --------------------------------------------- */
 
   scroller.style.overflowX =
@@ -1092,20 +1102,32 @@ savedCard.classList.add(
 
 
   /* ---------------------------------------------
-     SCROLL DIRECTLY TO THE SAVED CARD
+     SCROLL TO SAVED CARD
      --------------------------------------------- */
 
   savedCard.scrollIntoView({
+
     inline: "center",
+
     block: "nearest"
+
   });
 
 
+  /* ---------------------------------------------
+     HIDE OTHER CARDS
+     --------------------------------------------- */
+
   cards.forEach(c => {
+
     if(c !== savedCard){
+
       c.classList.add("blur");
+
       c.style.opacity = "0";
+
       c.style.pointerEvents = "none";
+
     }
 
   });
