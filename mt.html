@@ -942,28 +942,30 @@ scroller.addEventListener("click", () => {
    SAVE DAILY CARD
    --------------------------------------------- */
 
-const index =
-  Array.from(
-    document.querySelectorAll(".card")
-  ).indexOf(center);
 
-localStorage.setItem(
-  "dailyMonthlyCard",
-  JSON.stringify({
+const today = new Date().toISOString().split('T')[0];
 
-    cardIndex: index,
+const index = Array.from(
+  document.querySelectorAll('.card')
+).indexOf(center);
 
-    cardNumber: center.dataset.number,
 
-    affirmation: center.dataset.word || "",
+/* ---------- ANALYTICS ---------- */
 
-    date: dateString
-
-  })
-);
- 
-
+trackAnalytics("card_drawn", {
+  card_number: center.dataset.number,
+  affirmation: center.dataset.word,
+  deck_id: center.dataset.deckId
 });
+
+
+localStorage.setItem('dailyMonthlyCard', JSON.stringify({
+  cardIndex: index,
+  cardNumber: center.dataset.number,
+  affirmation: center.dataset.word,
+  date: today
+}));
+
 
 /* =========================================================
    REVISIT TODAY'S SAVED CARD
