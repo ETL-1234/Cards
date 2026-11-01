@@ -350,7 +350,7 @@ function getLocalDate(){
 
 async function getCurrentDeck(){
 
-  const month = new Date().getUTCMonth() + 1;
+  const month = new Date().getMonth() + 1;
 
   const endpoint =
     `/rest/v1/monthly_card_deck` +
