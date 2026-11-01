@@ -1227,32 +1227,33 @@ async function initialiseDeck(){
       }
     );
 
+/* ---------------------------------------------
+   INITIAL CAROUSEL POSITION
+   --------------------------------------------- */
 
-    /* ---------------------------------------------
-       Initial carousel position
-       --------------------------------------------- */
-
-  requestAnimationFrame(() => {
+requestAnimationFrame(() => {
 
   const cards =
     track.querySelectorAll(".card");
 
   if(!cards.length) return;
 
+
   const randomIndex =
     Math.floor(
-      Math.random() *
-      cards.length
+      Math.random() * cards.length
     );
 
   const middleCard =
     cards[randomIndex];
+
 
   const scrollerRect =
     scroller.getBoundingClientRect();
 
   const cardRect =
     middleCard.getBoundingClientRect();
+
 
   const offset =
     (
@@ -1265,14 +1266,24 @@ async function initialiseDeck(){
       scrollerRect.width / 2
     );
 
+
   scroller.scrollLeft += offset;
 
-  updateCenter();
 
-  restoreSavedCard();
+  /* ---------------------------------------------
+     ALLOW CAROUSEL TO SETTLE
+     --------------------------------------------- */
+
+  setTimeout(() => {
+
+    updateCenter();
+
+    restoreSavedCard();
+
+  }, 50);
 
 });
-  }catch(err){
+    }catch(err){
 
     // Silently handle deck initialization errors.
 
