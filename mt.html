@@ -911,7 +911,7 @@ scroller.addEventListener("click", () => {
      DAILY CARD DATA
      --------------------------------------------- */
 
-  const dateString = new Date().toISOString().split("T")[0];
+  const dateString = getLocalDate();
 
   const cardNumber =
     center.dataset.number;
@@ -994,8 +994,7 @@ function restoreSavedCard(){
      CURRENT DATE
      --------------------------------------------- */
 
-  const todayString =
-    new Date().toISOString().split("T")[0];
+   const todayString = getLocalDate();
 
 
   /* ---------------------------------------------
