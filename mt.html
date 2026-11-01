@@ -967,177 +967,6 @@ localStorage.setItem('dailyMonthlyCard', JSON.stringify({
 }));
 
 
-/* =========================================================
-   REVISIT TODAY'S SAVED CARD
-   ========================================================= */
-
-function restoreSavedCard(){
-
-  /* ---------------------------------------------
-     GET SAVED CARD
-     --------------------------------------------- */
-
-  const savedRaw =
-    localStorage.getItem("dailyMonthlyCard");
-
-  if(!savedRaw){
-    return false;
-  }
-
-
-  let saved;
-
-  try{
-
-    saved = JSON.parse(savedRaw);
-
-  }catch(err){
-
-    localStorage.removeItem("dailyMonthlyCard");
-
-    return false;
-
-  }
-
-
-  /* ---------------------------------------------
-     CHECK DATE
-     --------------------------------------------- */
-
-  const today = getLocalDate();
-
-  if(saved.date !== today){
-
-    localStorage.removeItem("dailyMonthlyCard");
-
-    return false;
-
-  }
-
-
-  /* ---------------------------------------------
-     GET EXACT SAVED CARD
-     --------------------------------------------- */
-
-  const cards =
-    document.querySelectorAll(".card");
-
-  const savedCard =
-    cards[saved.cardIndex];
-
-
-  if(!savedCard){
-
-    localStorage.removeItem("dailyMonthlyCard");
-
-    return false;
-
-  }
-
-
-  /* ---------------------------------------------
-     REVISIT POSITION
-     --------------------------------------------- */
-
-  viewport.classList.add("revisit");
-
-
-  /* ---------------------------------------------
-     LOAD FRONT IMAGE
-     --------------------------------------------- */
-
-  const img =
-    savedCard.querySelector(".face.front img");
-
-  if(img){
-
-    if(!img.src || img.src === window.location.href){
-
-      img.src = img.dataset.src;
-
-    }
-
-  }
-
-
-  /* ---------------------------------------------
-     SELECT + FLIP SAVED CARD
-     --------------------------------------------- */
-
-  savedCard.classList.add(
-    "selected",
-    "flipped"
-  );
-
-
-  /* ---------------------------------------------
-     ANALYTICS
-     --------------------------------------------- */
-
-  trackAnalytics("card_revisited", {
-
-    card_number: savedCard.dataset.number,
-
-    affirmation: savedCard.dataset.word
-
-  });
-
-
-  /* ---------------------------------------------
-     LOCK SELECTED CARD
-     --------------------------------------------- */
-
-  scroller.style.overflowX = "hidden";
-
-  scroller.style.touchAction = "pan-y";
-
-
-  /* ---------------------------------------------
-     SCROLL DIRECTLY TO SAVED CARD
-     --------------------------------------------- */
-
-  savedCard.scrollIntoView({
-
-    inline: "center",
-
-    block: "nearest"
-
-  });
-
-
-  /* ---------------------------------------------
-     HIDE OTHER CARDS
-     --------------------------------------------- */
-
-  cards.forEach(c => {
-
-    if(c !== savedCard){
-
-      c.classList.add("blur");
-
-      c.style.opacity = "0";
-
-      c.style.pointerEvents = "none";
-
-    }
-
-  });
-
-
-  /* ---------------------------------------------
-     SHOW REVISIT MESSAGE
-     --------------------------------------------- */
-
-  revealPanel.style.display = "flex";
-
-  revisitHeader.style.display = "block";
-
-  welcomeHeader.style.display = "none";
-
-
-  return true;
-
-}
 
 
 /* =========================================================
@@ -1229,63 +1058,130 @@ async function initialiseDeck(){
       }
     );
 
-/* ---------------------------------------------
-   INITIAL CAROUSEL POSITION
-   --------------------------------------------- */
+/* ---------- INITIAL ---------- */
 
 requestAnimationFrame(() => {
 
-  const cards =
-    track.querySelectorAll(".card");
+  /* ---------- INITIAL CAROUSEL POSITION ---------- */
 
-  if(!cards.length) return;
-
+  const cards = track.querySelectorAll('.card');
 
   const randomIndex =
-    Math.floor(
-      Math.random() * cards.length
-    );
+    Math.floor(Math.random() * cards.length);
 
-  const middleCard =
-    cards[randomIndex];
+  const middleCard = cards[randomIndex];
 
+  const scrollerRect = scroller.getBoundingClientRect();
 
-  const scrollerRect =
-    scroller.getBoundingClientRect();
-
-  const cardRect =
-    middleCard.getBoundingClientRect();
-
+  const cardRect = middleCard.getBoundingClientRect();
 
   const offset =
-    (
-      cardRect.left +
-      cardRect.width / 2
-    )
-    -
-    (
-      scrollerRect.left +
-      scrollerRect.width / 2
-    );
-
+    (cardRect.left + cardRect.width / 2) -
+    (scrollerRect.left + scrollerRect.width / 2);
 
   scroller.scrollLeft += offset;
 
 
-  /* ---------------------------------------------
-     ALLOW CAROUSEL TO SETTLE
-     --------------------------------------------- */
+  /* ---------- CENTER DETECTION ---------- */
 
-  setTimeout(() => {
+  setTimeout(updateCenter, 50);
 
-    updateCenter();
 
-    restoreSavedCard();
+  /* -------- CHECK FOR SAVED DAILY CARD -------- */
 
-  }, 50);
+  const saved = JSON.parse(
+    localStorage.getItem('dailyMonthlyCard')
+  );
+
+  const today = new Date().toISOString().split('T')[0];
+
+
+  if(saved && saved.date === today){
+
+    const cards = document.querySelectorAll('.card');
+
+    const savedCard = cards[saved.cardIndex];
+
+
+    if(savedCard){
+
+      /* ---------- REVISIT POSITION ---------- */
+
+      viewport.classList.add('revisit');
+
+
+      /* ---------- LOAD FRONT IMAGE ---------- */
+
+      const img = savedCard.querySelector('.face.front img');
+
+      if(!img.src) img.src = img.dataset.src;
+
+
+      /* ---------- SELECT AND FLIP ---------- */
+
+      savedCard.classList.add('selected', 'flipped');
+
+
+      /* ---------- ANALYTICS ---------- */
+
+      trackAnalytics("card_revisited", {
+        card_number: savedCard.dataset.number,
+        affirmation: savedCard.dataset.word
+      });
+
+
+      /* ---------- LOCK SELECTED CARD ---------- */
+
+      scroller.style.overflowX = "hidden";
+
+      scroller.style.touchAction = "pan-y";
+
+
+      /* ---------- SCROLL DIRECTLY TO THAT CARD ---------- */
+
+      savedCard.scrollIntoView({
+        inline: "center",
+        block: "nearest"
+      });
+
+
+      /* ---------- HIDE OTHER CARDS ---------- */
+
+      cards.forEach(c => {
+
+        if(c !== savedCard){
+
+          c.classList.add('blur');
+
+          c.style.opacity = "0";
+
+          c.style.pointerEvents = "none";
+
+        }
+
+      });
+
+
+      /* ---------- SHOW REVISIT MESSAGE ---------- */
+
+      revealPanel.style.display = "flex";
+
+      revisitHeader.style.display = "block";
+
+      welcomeHeader.style.display = "none";
+
+    }
+
+  }else{
+
+    localStorage.removeItem('dailyMonthlyCard');
+
+  }
 
 });
-    }catch(err){
+  
+  
+  }catch(err){
 
     // Silently handle deck initialization errors.
 
