@@ -1126,7 +1126,8 @@ requestAnimationFrame(() => {
 
       trackAnalytics("card_revisited", {
         card_number: savedCard.dataset.number,
-        affirmation: savedCard.dataset.word
+        affirmation: savedCard.dataset.word,
+        deck_id: savedCard.dataset.deckId
       });
 
 
